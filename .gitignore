@@ -4,3 +4,5 @@ my_dsn.json
 __pycache__
 my_data
 venv
+*.png
+

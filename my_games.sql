@@ -45,6 +45,8 @@ CREATE TABLE `my_games` (
   `termination` varchar(20) NOT NULL DEFAULT '',
   `move_times` varchar(5000) NOT NULL DEFAULT '',
   `pgn` varchar(5000) NOT NULL DEFAULT '',
+  `is_goofy` boolean NOT NULL DEFAULT 0,   
+  `last_piece` char(1) NOT NULL DEFAULT 'P',
   PRIMARY KEY (`id`),
   UNIQUE KEY `gameid` (`gameid`),
   KEY `my_date` (`my_date`)

@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+
+from flask import Flask
+from flask import render_template
+from flask import jsonify
+
+import json
+import sqlite3
+import re
+
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+
+    rows = []
+
+    try:
+        with sqlite3.connect("/tmp/status.db") as connection:
+            dbh = connection.cursor()
+#            rows = dbh.execute("select slot,pid,step,step_index,message from status where step_index>0 order by slot,pid,step_index").fetchall()
+            rows = dbh.execute("select slot,pid,step,step_index,message from status where step_index>=0 order by rowid").fetchall()
+    except:
+        rows = []
+
+    new_rows = []
+
+    for row in rows:
+        [slot,pid,step,guid,msg] = row
+
+        try:
+            data = json.loads(msg)
+
+            if data.get('step_output',''):
+                data['step_output'] = "\n" + data['step_output']
+
+            data = json.dumps(data, indent=4)
+
+            data = data.replace("\\n","\n")
+            data = data.replace("\\r","")
+            data = data.replace("\\\"","\"")
+            data = data.replace("\\\'","\'")
+
+            data = re.sub(r'(\\u....\[m)','', data)
+            data = re.sub(r'(\\u....\[.m)','', data)
+            data = re.sub(r'(\\u....\[..;..m)','', data)
+        except:
+            data = msg
+
+        new_rows.append([slot,pid,step,guid,data])
+
+    return render_template('index.html', rows=new_rows)
+
+
+
+if __name__ == '__main__':
+    app.run(debug = False, host = '0.0.0.0', port = 5000)
+
+
