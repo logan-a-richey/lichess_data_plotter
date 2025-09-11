@@ -1,14 +1,81 @@
 <!DOCTYPE HTML>
-
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>Flask App</title>
+        <meta charset="UTF-8">
+        <title>Results Pie Chart</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+            }
+            img {
+                display: block;
+                margin: 20px auto;
+                max-width: 1000px;
+            }
+            table {
+                border-collapse: collapse;
+                margin: 20px auto;
+                min-width: 300px;
+            }
+            th, td {
+                border: 1px solid #444;
+                padding: 8px 12px;
+                text-align: center;
+            }
+            th {
+                background-color: #f0f0f0;
+            }
+            h1, h2 {
+                text-align: center;
+            }
+            .back-link {
+                display: block;
+                text-align: center;
+                margin-top: 20px;
+            }
+        </style>
     </head>
     <body>
-        <!-- <p>Hello World!</p> -->
-        <h1>Larichey Results Data:</h1>
-        <img src="{{url_for('plot_results_pie_chart')}}" alt="My pie chart">
+        <h1>Win / Loss / Draw Rates</h1>
+
+        <!-- Chart image generated dynamically -->
+        <img src="{{ url_for('plot_results_pie_chart', 
+                             white_wins=white_results.wins, 
+                             white_losses=white_results.losses, 
+                             white_draws=white_results.draws,
+                             black_wins=black_results.wins, 
+                             black_losses=black_results.losses, 
+                             black_draws=black_results.draws) }}"
+             alt="Results Pie Chart">
+
+        <h2>Raw Counts</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Color</th>
+                    <th>Wins</th>
+                    <th>Losses</th>
+                    <th>Draws</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>White</td>
+                    <td>{{ white_results.wins }}</td>
+                    <td>{{ white_results.losses }}</td>
+                    <td>{{ white_results.draws }}</td>
+                </tr>
+                <tr>
+                    <td>Black</td>
+                    <td>{{ black_results.wins }}</td>
+                    <td>{{ black_results.losses }}</td>
+                    <td>{{ black_results.draws }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a href="{{ url_for('index') }}" class="back-link">Back to Home</a>
     </body>
 </html>
 

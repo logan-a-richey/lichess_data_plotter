@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Games Per Month</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { text-align: center; }
+            img { display: block; margin: 20px auto; max-width: 800px; }
+            table { border-collapse: collapse; margin: 20px auto; }
+            th, td { border: 1px solid #444; padding: 6px 10px; text-align: center; }
+            th { background: #f0f0f0; }
+            .back-link { display: block; text-align: center; margin-top: 20px; }
+        </style>
+    </head>
+    <body>
+        <h1>Games Played Per Month</h1>
+        
+        <img src="{{ url_for('plot_games_per_month', 
+                             months=months, 
+                             counts=counts) }}" 
+             alt="Games per Month Chart">
+
+        <h2>Raw Data</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Games</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m, c in zip(months, counts) %}
+                <tr>
+                    <td>{{ m }}</td>
+                    <td>{{ c }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ url_for('index') }}" class="back-link">← Back to Home</a>
+    </body>
+</html>

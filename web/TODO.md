@@ -7,7 +7,7 @@
 5. html table: adoption data, been adopted data
 6. bar chart: game length (number of moves) {grouped in ranges of 10}
 7. average opponent rating per month; whisker opp rating (low, low mid, med, high mid, high)
-8. pie chart termination type
+8. pie chart : checkmating piece, terminating piece (p, n, b, r, q, k)
 9. pie chart variant type 
 10. html tables:
     top 10 highest rated bullet wins 
@@ -17,7 +17,6 @@
     html table: link to worst losses
     html table: link to goofiest wins
     html table: link to goofiest losses
-11. pie chart : checkmating piece, terminating piece (p, n, b, r, q, k)
 
 # note:
 - terminating move is the 2nd-to-last word of the pgn field.
