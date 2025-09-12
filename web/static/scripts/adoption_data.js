@@ -9,7 +9,7 @@ const fullBeenAdoptedNames = fullBeenAdopted.map(p=>p.name);
 const fullBeenAdoptedCounts = fullBeenAdopted.map(p=>p.num_lose_streaks);
 const fullBeenAdoptedScatter = fullBeenAdopted.map(p=>({x:p.highest_elo, y:p.num_lose_streaks, name:p.name}));
 
-// ====== Initialize Charts ======
+// --- Init Charts --- 
 let barAdoptedChart = new Chart(document.getElementById("barAdopted"), {
     type: "bar",
     data: { labels: [], datasets: [{ label:"Num Adoptions", data: [], backgroundColor:"#4caf50" }] },
@@ -50,7 +50,7 @@ barBeenAdoptedChart.options.onClick = (evt, elements) => chartClickHandler('tabl
 scatterAdoptedChart.options.onClick = (evt, elements) => chartClickHandler('tableAdopted', evt, scatterAdoptedChart);
 scatterBeenAdoptedChart.options.onClick = (evt, elements) => chartClickHandler('tableBeenAdopted', evt, scatterBeenAdoptedChart);
 
-// ====== Scatter click handler ======
+// Click Handlers
 function scatterClickHandler(tableId, evt, elements){
     if(elements.length>0){
         const index = elements[0].index;
@@ -69,7 +69,6 @@ function scatterClickHandler(tableId, evt, elements){
     }
 }
 
-// ====== Table Sorting ======
 function sortTable(tableId, colIndex, type, dir) {
     const table = document.getElementById(tableId);
     const tbody = table.tBodies[0];
@@ -97,7 +96,7 @@ document.querySelectorAll("th[data-sort]").forEach(th=>{
     });
 });
 
-// ====== Update charts based on dropdown ======
+// Update charts based on dropdown 
 function updateCharts(limitAdopted, limitBeen){
     const la = limitAdopted==="all"?fullAdopted.length:parseInt(limitAdopted);
     const lb = limitBeen==="all"?fullBeenAdopted.length:parseInt(limitBeen);
@@ -139,8 +138,6 @@ function chartClickHandler(tableId, evt, chart){
     }
 }
 
-
-
 // Attach dropdown events
 document.getElementById("topFilterAdopted").addEventListener("change",()=>updateCharts(
     document.getElementById("topFilterAdopted").value,
@@ -152,6 +149,8 @@ document.getElementById("topFilterBeenAdopted").addEventListener("change",()=>up
 ));
 
 // Initial update
-updateCharts(document.getElementById("topFilterAdopted").value,
-             document.getElementById("topFilterBeenAdopted").value);
+updateCharts(
+    document.getElementById("topFilterAdopted").value,
+    document.getElementById("topFilterBeenAdopted").value
+);
 

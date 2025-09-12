@@ -1,100 +1,109 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>Adoption Data</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="stylesheet" href="{{ url_for('static', filename='styles/adoption_data.css') }}">
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
+        <title>{{ my_username }} Adoption Data</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/adoption_data.css') }}">
+    </head>
+    <body>
+        <h1> {{ my_username }} Adoption Data </h1> 
+        
+        <p style="text-align:center;"><a href="{{ url_for('index') }}">Back to Home</a></p>
+        
+        <!-- Adoption -->
+        <hr>
 
-<h2>{{ my_username }} adopted players</h2>
+        <h2>{{ my_username }} adopted players</h2>
+        <div class="controls">
+            Show: 
+            <select id="topFilterAdopted">
+                <option value="10">Top 10</option>
+                <option value="20">Top 20</option>
+                <option value="30">Top 30</option>
+                <option value="all">Show All</option>
+            </select>
+        </div>
+        <canvas id="barAdopted"></canvas>
+        <canvas id="scatterAdopted"></canvas>
+        <table id="tableAdopted">
+            <thead>
+                <tr>
+                    <th data-sort="num" data-dir="desc">Num Adoptions ▼</th>
+                    <th data-sort="name" data-dir="asc">Player Name</th>
+                    <th data-sort="elo" data-dir="desc">Highest Elo ▼</th>
+                    <th>Sites</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in adopted %}
+                <tr>
+                    <td>{{ p.num_win_streaks }}</td>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.highest_elo }}</td>
+                    <td>
+                    <ul>
+                    {% for s in p.win_sites %}
+                        <li><a href="{{ s }}" target="_blank">{{ s }}</a></li>
+                    {% endfor %}
+                    </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    
+        <!-- Been Adopted -->
+        <hr>
+        <h2>{{ my_username }} been-adopted data:</h2>
 
-<div class="controls">
-    Show: 
-    <select id="topFilterAdopted">
-        <option value="10">Top 10</option>
-        <option value="20">Top 20</option>
-        <option value="all">Show All</option>
-    </select>
-</div>
+        <div class="controls">
+            Show: 
+            <select id="topFilterBeenAdopted">
+                <option value="10">Top 10</option>
+                <option value="20">Top 20</option>
+                <option value="all">Show All</option>
+            </select>
+        </div>
 
-<canvas id="barAdopted"></canvas>
-<canvas id="scatterAdopted"></canvas>
+        <canvas id="barBeenAdopted"></canvas>
+        <canvas id="scatterBeenAdopted"></canvas>
 
-<table id="tableAdopted">
-<thead>
-<tr>
-<th data-sort="num" data-dir="desc">Num Adoptions ▼</th>
-<th data-sort="name" data-dir="asc">Player Name</th>
-<th data-sort="elo" data-dir="desc">Highest Elo ▼</th>
-<th>Sites</th>
-</tr>
-</thead>
-<tbody>
-{% for p in adopted %}
-<tr>
-<td>{{ p.num_win_streaks }}</td>
-<td>{{ p.name }}</td>
-<td>{{ p.highest_elo }}</td>
-<td>
-<ul>
-{% for s in p.win_sites %}
-<li><a href="{{ s }}" target="_blank">{{ s }}</a></li>
-{% endfor %}
-</ul>
-</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
+        <table id="tableBeenAdopted">
+            <thead>
+                <tr>
+                    <th data-sort="num" data-dir="desc">Num Times Adopted ▼</th>
+                    <th data-sort="name" data-dir="asc">Player Name</th>
+                    <th data-sort="elo" data-dir="desc">Highest Elo ▼</th>
+                    <th>Sites</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in been_adopted %}
+                <tr>
+                    <td>{{ p.num_lose_streaks }}</td>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.highest_elo }}</td>
+                    <td>
+                    <ul>
+                        {% for s in p.lose_sites %}
+                        <li><a href="{{ s }}" target="_blank">{{ s }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-<h2>{{ my_username }} has been adopted by players</h2>
+        <script>
+            const fullAdopted = {{ adopted|tojson }};
+            const fullBeenAdopted = {{ been_adopted|tojson }};
+        </script>
 
-<div class="controls">
-    Show: 
-    <select id="topFilterBeenAdopted">
-        <option value="10">Top 10</option>
-        <option value="20">Top 20</option>
-        <option value="all">Show All</option>
-    </select>
-</div>
+        <script src="{{ url_for('static', filename='scripts/adoption_data.js') }}"></script>
 
-<canvas id="barBeenAdopted"></canvas>
-<canvas id="scatterBeenAdopted"></canvas>
-
-<table id="tableBeenAdopted">
-<thead>
-<tr>
-<th data-sort="num" data-dir="desc">Num Times Adopted ▼</th>
-<th data-sort="name" data-dir="asc">Player Name</th>
-<th data-sort="elo" data-dir="desc">Highest Elo ▼</th>
-<th>Sites</th>
-</tr>
-</thead>
-<tbody>
-{% for p in been_adopted %}
-<tr>
-<td>{{ p.num_lose_streaks }}</td>
-<td>{{ p.name }}</td>
-<td>{{ p.highest_elo }}</td>
-<td>
-<ul>
-{% for s in p.lose_sites %}
-<li><a href="{{ s }}" target="_blank">{{ s }}</a></li>
-{% endfor %}
-</ul>
-</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
-
-<script>
-const fullAdopted = {{ adopted|tojson }};
-const fullBeenAdopted = {{ been_adopted|tojson }};
-</script>
-<script src="{{ url_for('static', filename='scripts/adoption_data.js') }}"></script>
-</body>
+        <p style="text-align:center;"><a href="{{ url_for('index') }}">Back to Home</a></p>
+    </body>
 </html>
 

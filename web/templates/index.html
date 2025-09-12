@@ -5,13 +5,13 @@
         <title>Flask App</title>
     </head>
     <body>
-        <h1>Larichey Chess Plots:</h1>
+        <h1>Lichess Chess Plot Dashboard:</h1>
         <ul>
             <li><a href="{{ url_for('get_results_pie_chart') }}">Results Pie Chart</a></li>
             <li><a href="{{ url_for('get_games_per_month') }}">Games Per Month</a></li>    
             <li><a href="{{ url_for('get_most_common_openings') }}">Most Common Openings</a></li>
+            <li><a href="{{url_for('get_adoption_data')}}">Adoption Data</li>
         </ul>
-        <ul><a href="{{url_for('get_adoption_data')}}">Adoption Data</ul>
     </body>
 </html>
 
