@@ -1,81 +1,79 @@
 <!DOCTYPE HTML>
+
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Results Pie Chart</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                margin: 20px;
-            }
-            img {
-                display: block;
-                margin: 20px auto;
-                max-width: 1000px;
-            }
-            table {
-                border-collapse: collapse;
-                margin: 20px auto;
-                min-width: 300px;
-            }
-            th, td {
-                border: 1px solid #444;
-                padding: 8px 12px;
-                text-align: center;
-            }
-            th {
-                background-color: #f0f0f0;
-            }
-            h1, h2 {
-                text-align: center;
-            }
-            .back-link {
-                display: block;
-                text-align: center;
-                margin-top: 20px;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>Win / Loss / Draw Rates</h1>
+<head>
+    <meta charset="UTF-8">
+    <title>Results Pie Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        canvas { display: block; margin: 20px auto; }
+        table { border-collapse: collapse; margin: 20px auto; }
+        th, td { border: 1px solid #444; padding: 6px 10px; text-align: center; }
+        th { background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <h1 style="text-align:center;">Win / Loss / Draw Rates</h1>
 
-        <!-- Chart image generated dynamically -->
-        <img src="{{ url_for('plot_results_pie_chart', 
-                             white_wins=white_results.wins, 
-                             white_losses=white_results.losses, 
-                             white_draws=white_results.draws,
-                             black_wins=black_results.wins, 
-                             black_losses=black_results.losses, 
-                             black_draws=black_results.draws) }}"
-             alt="Results Pie Chart">
+    <canvas id="whiteChart" width="300" height="300"></canvas>
+    <canvas id="blackChart" width="300" height="300"></canvas>
 
-        <h2>Raw Counts</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Color</th>
-                    <th>Wins</th>
-                    <th>Losses</th>
-                    <th>Draws</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>White</td>
-                    <td>{{ white_results.wins }}</td>
-                    <td>{{ white_results.losses }}</td>
-                    <td>{{ white_results.draws }}</td>
-                </tr>
-                <tr>
-                    <td>Black</td>
-                    <td>{{ black_results.wins }}</td>
-                    <td>{{ black_results.losses }}</td>
-                    <td>{{ black_results.draws }}</td>
-                </tr>
-            </tbody>
-        </table>
+    <h2 style="text-align:center;">Raw Counts</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Color</th>
+                <th>Wins</th>
+                <th>Losses</th>
+                <th>Draws</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>White</td>
+                <td>{{ white_results.wins }}</td>
+                <td>{{ white_results.losses }}</td>
+                <td>{{ white_results.draws }}</td>
+            </tr>
+            <tr>
+                <td>Black</td>
+                <td>{{ black_results.wins }}</td>
+                <td>{{ black_results.losses }}</td>
+                <td>{{ black_results.draws }}</td>
+            </tr>
+        </tbody>
+    </table>
 
-        <a href="{{ url_for('index') }}" class="back-link">Back to Home</a>
-    </body>
+    <script>
+        const whiteData = {
+            labels: ["Wins", "Losses", "Draws"],
+            datasets: [{
+                data: [{{ white_results.wins }}, {{ white_results.losses }}, {{ white_results.draws }}],
+                backgroundColor: ["#4caf50", "#f44336", "#2196f3"]
+            }]
+        };
+        const blackData = {
+            labels: ["Wins", "Losses", "Draws"],
+            datasets: [{
+                data: [{{ black_results.wins }}, {{ black_results.losses }}, {{ black_results.draws }}],
+                backgroundColor: ["#4caf50", "#f44336", "#2196f3"]
+            }]
+        };
+
+        new Chart(document.getElementById("whiteChart"), {
+            type: "pie",
+            data: whiteData,
+            options: { plugins: { title: { display: true, text: "As White" } } }
+        });
+        new Chart(document.getElementById("blackChart"), {
+            type: "pie",
+            data: blackData,
+            options: { plugins: { title: { display: true, text: "As Black" } } }
+        });
+    </script>
+
+    <p style="text-align:center;"><a href="{{ url_for('index') }}">Back to Home</a></p>
+</body>
 </html>
 

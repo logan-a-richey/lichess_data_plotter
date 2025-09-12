@@ -1,44 +1,71 @@
 <!DOCTYPE HTML>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Games Per Month</title>
-        <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            h1 { text-align: center; }
-            img { display: block; margin: 20px auto; max-width: 800px; }
-            table { border-collapse: collapse; margin: 20px auto; }
-            th, td { border: 1px solid #444; padding: 6px 10px; text-align: center; }
-            th { background: #f0f0f0; }
-            .back-link { display: block; text-align: center; margin-top: 20px; }
-        </style>
-    </head>
-    <body>
-        <h1>Games Played Per Month</h1>
+<head>
+    <meta charset="UTF-8">
+    <title>Games Per Month</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        canvas { display: block; margin: 20px auto; max-width: 800px; }
+        table { border-collapse: collapse; margin: 20px auto; }
+        th, td { border: 1px solid #444; padding: 6px 10px; text-align: center; }
+        th { background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <h1 style="text-align:center;">Games Played Per Month</h1>
+
+    <canvas id="gamesChart"></canvas>
+
+    <h2 style="text-align:center;">Raw Data</h2>
+    <table>
+        <thead>
+            <tr><th>Month</th><th>Games</th></tr>
+        </thead>
+        <tbody>
+            {% for m, c in zip(months, counts) %}
+            <tr>
+                <td>{{ m }}</td>
+                <td>{{ c }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        const labels = {{ months|tojson }};
+        const data = {{ counts|tojson }};
+        const myChart = new Chart(document.getElementById("gamesChart"), {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Games Played",
+                    data: data,
+                    borderColor: "#2196f3",
+                    backgroundColor: "rgba(33, 150, 243, 0.3)",
+                    fill: true,
+                    tension: 0.2,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: "Monthly Games Played" }
+                },
+                scales: {
+                    x: { title: { display: true, text: "Month" } },
+                    y: { title: { display: true, text: "Games" }, beginAtZero: true }
+                }
+            }
+        });
+        myChart.canvas.parentNode.style.height = '600px';
+        myChart.resize();
         
-        <img src="{{ url_for('plot_games_per_month', 
-                             months=months, 
-                             counts=counts) }}" 
-             alt="Games per Month Chart">
+    </script>
 
-        <h2>Raw Data</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Month</th>
-                    <th>Games</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for m, c in zip(months, counts) %}
-                <tr>
-                    <td>{{ m }}</td>
-                    <td>{{ c }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <a href="{{ url_for('index') }}" class="back-link">Back to Home</a>
-    </body>
+    <p style="text-align:center;"><a href="{{ url_for('index') }}">Back to Home</a></p>
+</body>
 </html>
+
