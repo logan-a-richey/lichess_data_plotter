@@ -5,7 +5,7 @@
         <title>Flask App</title>
     </head>
     <body>
-        <h1>Lichess Plotter Dashboard:</h1>
+        <h1>{{ my_username }} Lichess Analytics Dashboard:</h1>
         <ul>
             <li><a href="{{ url_for('get_results_pie_chart') }}">Results Pie Chart</a></li>
             <li><a href="{{ url_for('get_games_per_month') }}">Games Per Month</a></li>    

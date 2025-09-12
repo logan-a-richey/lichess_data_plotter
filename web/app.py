@@ -14,7 +14,10 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template(
+        "index.html",
+        my_username=my_username
+    )
 
 @app.route("/get_results_pie_chart")
 def get_results_pie_chart():
@@ -55,7 +58,8 @@ def get_results_pie_chart():
     return render_template(
         "results_pie_chart.html",
         white_results=white_results,
-        black_results=black_results
+        black_results=black_results,
+        my_username=my_username
     )
 
 @app.route("/get_games_per_month")
@@ -98,7 +102,8 @@ def get_games_per_month():
         months=months,
         counts=counts,
         max_games=max_games if max_games > 0 else 1, #avoid div by zero
-        zip=zip
+        zip=zip,
+        my_username=my_username
     )
 
 @app.route("/get_most_common_openings")
@@ -118,6 +123,7 @@ def get_most_common_openings():
         ORDER BY cnt DESC
         LIMIT 10
     """
+
     dbh.execute(sql_white, (my_username,))
     white_rows = dbh.fetchall()
 
@@ -161,7 +167,8 @@ def get_most_common_openings():
         white_counts=white_counts,
         black_labels=black_labels,
         black_counts=black_counts,
-        combined_rows=combined_rows
+        combined_rows=combined_rows,
+        my_username=my_username
     )
 
 @dataclass 

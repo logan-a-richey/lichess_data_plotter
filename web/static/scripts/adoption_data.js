@@ -76,8 +76,12 @@ function sortTable(tableId, colIndex, type, dir) {
     rows.sort((a,b)=>{
         let valA = a.cells[colIndex].innerText;
         let valB = b.cells[colIndex].innerText;
-        if(type==="num"){ valA=parseInt(valA); valB=parseInt(valB); }
-        if(type==="name"){ valA=valA.toLowerCase(); valB=valB.toLowerCase(); }
+        if(type==="num"){ 
+            valA=parseInt(valA); valB=parseInt(valB); 
+        }
+        if(type==="name"){ 
+            valA=valA.toLowerCase(); valB=valB.toLowerCase(); 
+        }
         return dir==="asc" ? (valA>valB?1:-1) : (valA<valB?1:-1);
     });
     rows.forEach(r=>tbody.appendChild(r));
@@ -143,6 +147,7 @@ document.getElementById("topFilterAdopted").addEventListener("change",()=>update
     document.getElementById("topFilterAdopted").value,
     document.getElementById("topFilterBeenAdopted").value
 ));
+
 document.getElementById("topFilterBeenAdopted").addEventListener("change",()=>updateCharts(
     document.getElementById("topFilterAdopted").value,
     document.getElementById("topFilterBeenAdopted").value
