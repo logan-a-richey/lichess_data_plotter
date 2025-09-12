@@ -6,27 +6,44 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
-        canvas { display: block; margin: 20px auto; max-width: 800px; }
+        h1, h2 { text-align: center; }
+        canvas { display: block; margin: 20px auto; max-width: 1000px; height: 500px !important; }
         table { border-collapse: collapse; margin: 20px auto; }
-        th, td { border: 1px solid #444; padding: 6px 10px; text-align: center; }
+        th, td { border: 1px solid #444; padding: 6px 10px; text-align: center; min-width: 50px; }
         th { background: #f0f0f0; }
     </style>
 </head>
 <body>
-    <h1 style="text-align:center;">Games Played Per Month</h1>
+    <h1>Games Played Per Month</h1>
 
+    <!-- Line chart -->
     <canvas id="gamesChart"></canvas>
 
-    <h2 style="text-align:center;">Raw Data</h2>
+    <!-- Heatmap-style table -->
+    <h2>Monthly Heatmap</h2>
     <table>
         <thead>
-            <tr><th>Month</th><th>Games</th></tr>
+            <tr>
+                <th>Year</th>
+                <th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th>
+                <th>May</th><th>Jun</th><th>Jul</th><th>Aug</th>
+                <th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th>
+            </tr>
         </thead>
         <tbody>
-            {% for m, c in zip(months, counts) %}
+            {% for year, months_dict in results.items() %}
             <tr>
-                <td>{{ m }}</td>
-                <td>{{ c }}</td>
+                <td>{{ year }}</td>
+                {% for m in range(1, 13) %}
+                    {% set count = months_dict[m] %}
+                    {% set ratio = count / max_games %}
+                    {% if ratio > 1 %}{% set ratio = 1 %}{% endif %}
+                    {% set red = (255 * ratio)|round %}
+                    {% set green = (200 * (1-ratio))|round %}
+                    <td style="background-color: rgba({{ red }}, {{ green }}, 100, 0.6)">
+                        {{ count }}
+                    </td>
+                {% endfor %}
             </tr>
             {% endfor %}
         </tbody>
@@ -35,7 +52,8 @@
     <script>
         const labels = {{ months|tojson }};
         const data = {{ counts|tojson }};
-        const myChart = new Chart(document.getElementById("gamesChart"), {
+
+        new Chart(document.getElementById("gamesChart"), {
             type: "line",
             data: {
                 labels: labels,
@@ -60,9 +78,6 @@
                 }
             }
         });
-        myChart.canvas.parentNode.style.height = '600px';
-        myChart.resize();
-        
     </script>
 
     <p style="text-align:center;"><a href="{{ url_for('index') }}">Back to Home</a></p>

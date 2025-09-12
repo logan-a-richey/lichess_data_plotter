@@ -61,20 +61,39 @@ def get_games_per_month():
     dbh = connection.cursor()
 
     sql = """
-        SELECT DATE_FORMAT(my_date, '%%Y-%%m') AS month, COUNT(*) AS games
+        SELECT YEAR(my_date) AS year, MONTH(my_date) AS month, COUNT(*) AS games
         FROM my_games
         WHERE white = %s OR black = %s
-        GROUP BY month
-        ORDER BY month;
+        GROUP BY year, month
+        ORDER BY year, month;
     """
     dbh.execute(sql, (my_username, my_username))
     rows = dbh.fetchall()
     connection.close()
 
-    months = [row[0] for row in rows]
-    counts = [row[1] for row in rows]
+    # Restructure into a dict: { year: {month: count} }
+    results = {}
+    max_games = 0
 
-    return render_template("games_per_month.html", months=months, counts=counts, zip=zip)
+    for year, month, games in rows:
+        if year not in results:
+            results[year] = {m: 0 for m in range(1, 13)}  # init all months to 0
+        results[year][month] = games
+        if games > max_games:
+            max_games = games
+
+    # Prepare for Chart.js (flat lists of months/games)
+    months = [f"{r[0]}-{r[1]:02d}" for r in rows]
+    counts = [r[2] for r in rows]
+
+    return render_template(
+        "games_per_month.html",
+        results=results,
+        months=months,
+        counts=counts,
+        max_games=max_games if max_games > 0 else 1, #avoid div by zero
+        zip=zip
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
