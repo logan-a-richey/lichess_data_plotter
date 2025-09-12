@@ -18,6 +18,8 @@ def index():
 
 @app.route("/get_results_pie_chart")
 def get_results_pie_chart():
+    ''' Return json to html '''
+
     # Load DB credentials
     with open("my_dsn.json") as file:
         dsn = json.load(file)
@@ -61,6 +63,8 @@ def get_results_pie_chart():
 
 @app.route("/plot_results_pie_chart.png")
 def plot_results_pie_chart():
+    ''' Return Matplotlib Image as Bytes ''' 
+
     white_results = {
         "wins": int(request.args.get("white_wins", 0)),
         "losses": int(request.args.get("white_losses", 0)),
@@ -87,6 +91,8 @@ def plot_results_pie_chart():
 
 @app.route("/get_games_per_month")
 def get_games_per_month():
+    ''' Return json to html '''
+
     # Load DB credentials
     with open("my_dsn.json") as file:
         dsn = json.load(file)
@@ -117,6 +123,8 @@ def get_games_per_month():
 
 @app.route("/plot_games_per_month.png")
 def plot_games_per_month():
+    ''' Return image ''' 
+
     months = request.args.getlist("months")
     counts = [int(c) for c in request.args.getlist("counts")]
 

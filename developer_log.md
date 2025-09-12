@@ -14,3 +14,8 @@
 
 Skills learned: sql, mysql_server, pymysql, regex, flask, html, jinga, matplotlib
 
+## Sep 10, 2025
+* created graph 2: line graph of games per month
+* explored month by month sql query
+* explored jinga templating and variables
+* added some css to configure the sizing of image, html tables, and hypertext
