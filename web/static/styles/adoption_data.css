@@ -1,0 +1,52 @@
+/* adoption_data.css */
+
+body { 
+    font-family: Arial, sans-serif; 
+    margin: 20px; 
+}
+
+h1 {
+    color: red;
+    text-align: center;
+    margin-top: 40px;
+}
+
+h2 {
+    color: blue;
+    text-align: center; 
+    margin-top: 40px; 
+}
+
+canvas { 
+    display: block; 
+    margin: 20px auto; 
+    max-width: 800px; 
+    height: 400px; 
+}
+
+table { 
+    border-collapse: collapse; 
+    margin: 20px auto; 
+    width: 90%; 
+}
+
+th, td { 
+    border: 1px solid #444; 
+    padding: 6px 10px; 
+    text-align: left; 
+}
+
+th { 
+    background: #f0f0f0; 
+    cursor: pointer; 
+}
+
+ul { 
+    margin: 0; 
+    padding-left: 16px; 
+}
+
+.controls { 
+    text-align: center; 
+    margin-bottom: 10px; 
+}
