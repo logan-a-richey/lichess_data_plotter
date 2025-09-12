@@ -42,6 +42,14 @@ let scatterBeenAdoptedChart = new Chart(document.getElementById("scatterBeenAdop
     }
 });
 
+// Bar charts
+barAdoptedChart.options.onClick = (evt, elements) => chartClickHandler('tableAdopted', evt, barAdoptedChart);
+barBeenAdoptedChart.options.onClick = (evt, elements) => chartClickHandler('tableBeenAdopted', evt, barBeenAdoptedChart);
+
+// Scatter charts
+scatterAdoptedChart.options.onClick = (evt, elements) => chartClickHandler('tableAdopted', evt, scatterAdoptedChart);
+scatterBeenAdoptedChart.options.onClick = (evt, elements) => chartClickHandler('tableBeenAdopted', evt, scatterBeenAdoptedChart);
+
 // ====== Scatter click handler ======
 function scatterClickHandler(tableId, evt, elements){
     if(elements.length>0){
@@ -110,6 +118,28 @@ function updateCharts(limitAdopted, limitBeen){
     scatterBeenAdoptedChart.data.datasets[0].data = fullBeenAdoptedScatter.slice(0,lb);
     scatterBeenAdoptedChart.update();
 }
+
+// "Click-and-zap-to" behavior
+function chartClickHandler(tableId, evt, chart){
+    const points = chart.getElementsAtEventForMode(evt, 'nearest', {intersect:true}, true);
+    if(points.length > 0){
+        const index = points[0].index;
+        const dataset = chart.data.datasets[0];
+        const name = chart.data.labels[index] || dataset.data[index].name;
+        const table = document.getElementById(tableId);
+        const rows = Array.from(table.tBodies[0].rows);
+        for(let row of rows){
+            if(row.cells[1].innerText === name){
+                row.scrollIntoView({behavior:"smooth", block:"center"});
+                row.style.backgroundColor="#ffff99";
+                setTimeout(()=>row.style.backgroundColor="",2000);
+                break;
+            }
+        }
+    }
+}
+
+
 
 // Attach dropdown events
 document.getElementById("topFilterAdopted").addEventListener("change",()=>updateCharts(
