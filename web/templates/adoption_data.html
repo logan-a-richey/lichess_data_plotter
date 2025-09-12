@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Adoption Data</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; }
+h2 { text-align: center; margin-top: 40px; }
+canvas { display: block; margin: 20px auto; max-width: 800px; height: 400px; }
+table { border-collapse: collapse; margin: 20px auto; width: 90%; }
+th, td { border: 1px solid #444; padding: 6px 10px; text-align: left; }
+th { background: #f0f0f0; cursor: pointer; }
+ul { margin: 0; padding-left: 16px; }
+.controls { text-align: center; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<h2>{{ my_username }} adopted players</h2>
+
+<div class="controls">
+    Show: 
+    <select id="topFilterAdopted">
+        <option value="10">Top 10</option>
+        <option value="20">Top 20</option>
+        <option value="all">Show All</option>
+    </select>
+</div>
+
+<canvas id="barAdopted"></canvas>
+
+<table id="tableAdopted">
+<thead>
+<tr>
+<th data-sort="num" data-dir="desc">Num Adoptions ▼</th>
+<th data-sort="name" data-dir="asc">Player Name</th>
+<th data-sort="elo" data-dir="desc">Highest Elo ▼</th>
+<th>Sites</th>
+</tr>
+</thead>
+<tbody>
+{% for p in adopted %}
+<tr>
+<td>{{ p.num_win_streaks }}</td>
+<td>{{ p.name }}</td>
+<td>{{ p.highest_elo }}</td>
+<td>
+<ul>
+{% for s in p.win_sites %}
+<li><a href="{{ s }}" target="_blank">{{ s }}</a></li>
+{% endfor %}
+</ul>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+<h2>{{ my_username }} has been adopted by players</h2>
+
+<div class="controls">
+    Show: 
+    <select id="topFilterBeenAdopted">
+        <option value="10">Top 10</option>
+        <option value="20">Top 20</option>
+        <option value="all">Show All</option>
+    </select>
+</div>
+
+<canvas id="barBeenAdopted"></canvas>
+
+<table id="tableBeenAdopted">
+<thead>
+<tr>
+<th data-sort="num" data-dir="desc">Num Times Adopted ▼</th>
+<th data-sort="name" data-dir="asc">Player Name</th>
+<th data-sort="elo" data-dir="desc">Highest Elo ▼</th>
+<th>Sites</th>
+</tr>
+</thead>
+<tbody>
+{% for p in been_adopted %}
+<tr>
+<td>{{ p.num_lose_streaks }}</td>
+<td>{{ p.name }}</td>
+<td>{{ p.highest_elo }}</td>
+<td>
+<ul>
+{% for s in p.lose_sites %}
+<li><a href="{{ s }}" target="_blank">{{ s }}</a></li>
+{% endfor %}
+</ul>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+<script>
+// === Bar charts ===
+const topAdoptedLabels = {{ top_adopted|map(attribute='name')|list|tojson }};
+const topAdoptedCounts = {{ top_adopted|map(attribute='num_win_streaks')|list|tojson }};
+
+const topBeenAdoptedLabels = {{ top_been_adopted|map(attribute='name')|list|tojson }};
+const topBeenAdoptedCounts = {{ top_been_adopted|map(attribute='num_lose_streaks')|list|tojson }};
+
+new Chart(document.getElementById("barAdopted"), {
+    type: "bar",
+    data: {
+        labels: topAdoptedLabels,
+        datasets: [{
+            label: "Num Adoptions",
+            data: topAdoptedCounts,
+            backgroundColor: "#4caf50"
+        }]
+    },
+    options: {
+        responsive:true,
+        plugins: { legend: { display: false }, title: { display: true, text: "Top Adopted Players" } }
+    }
+});
+
+new Chart(document.getElementById("barBeenAdopted"), {
+    type: "bar",
+    data: {
+        labels: topBeenAdoptedLabels,
+        datasets: [{
+            label: "Num Times Adopted",
+            data: topBeenAdoptedCounts,
+            backgroundColor: "#f44336"
+        }]
+    },
+    options: {
+        responsive:true,
+        plugins: { legend: { display: false }, title: { display: true, text: "Top Players Who Adopted Me" } }
+    }
+});
+
+// === Table sorting ===
+function sortTable(tableId, colIndex, type, dir) {
+    const table = document.getElementById(tableId);
+    const tbody = table.tBodies[0];
+    const rows = Array.from(tbody.rows);
+    rows.sort((a,b)=>{
+        let valA = a.cells[colIndex].innerText;
+        let valB = b.cells[colIndex].innerText;
+        if(type==="num") { valA=parseInt(valA); valB=parseInt(valB); }
+        if(type==="name") { valA=valA.toLowerCase(); valB=valB.toLowerCase(); }
+        return dir==="asc" ? (valA>valB?1:-1) : (valA<valB?1:-1);
+    });
+    rows.forEach(r=>tbody.appendChild(r));
+}
+
+// Attach click handlers for headers
+document.querySelectorAll("th[data-sort]").forEach(th=>{
+    th.addEventListener("click", ()=>{
+        const table = th.closest("table");
+        const colIndex = Array.from(th.parentNode.children).indexOf(th);
+        const type = th.dataset.sort;
+        const dir = th.dataset.dir;
+        sortTable(table.id, colIndex, type, dir);
+        th.dataset.dir = dir==="asc"?"desc":"asc"; // toggle
+        th.innerText = th.innerText.replace(/▲|▼/,"") + (th.dataset.dir==="asc"?" ▲":" ▼");
+    });
+});
+
+// === Dropdown filter ===
+function filterTop(tableId, selectId){
+    const table = document.getElementById(tableId);
+    const tbody = table.tBodies[0];
+    const select = document.getElementById(selectId);
+    const limit = select.value==="all"?Number.MAX_VALUE:parseInt(select.value);
+    Array.from(tbody.rows).forEach((row,i)=>row.style.display = i<limit?"":"none");
+}
+document.getElementById("topFilterAdopted").addEventListener("change",()=>filterTop("tableAdopted","topFilterAdopted"));
+document.getElementById("topFilterBeenAdopted").addEventListener("change",()=>filterTop("tableBeenAdopted","topFilterBeenAdopted"));
+
+// Initialize
+filterTop("tableAdopted","topFilterAdopted");
+filterTop("tableBeenAdopted","topFilterBeenAdopted");
+</script>
+
+</body>
+</html>
+
