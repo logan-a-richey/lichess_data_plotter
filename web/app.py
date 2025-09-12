@@ -22,8 +22,12 @@ def get_results_pie_chart():
     connection = pymysql.connect(**dsn)
     dbh = connection.cursor()
 
-    sql_white_result = "SELECT COUNT(*) FROM my_games WHERE (white=%s AND result=%s)"
-    sql_black_result = "SELECT COUNT(*) FROM my_games WHERE (black=%s AND result=%s)"
+    sql_white_result = """
+    SELECT COUNT(*) FROM my_games WHERE (white=%s AND result=%s)
+    """
+    sql_black_result = """
+    SELECT COUNT(*) FROM my_games WHERE (black=%s AND result=%s)
+    """
 
     white_results = {"wins": 0, "losses": 0, "draws": 0}
     black_results = {"wins": 0, "losses": 0, "draws": 0}
@@ -94,6 +98,66 @@ def get_games_per_month():
         max_games=max_games if max_games > 0 else 1, #avoid div by zero
         zip=zip
     )
+
+@app.route("/get_most_common_openings")
+def get_most_common_openings():
+    with open("my_dsn.json") as file:
+        dsn = json.load(file)
+
+    connection = pymysql.connect(**dsn)
+    dbh = connection.cursor()
+
+    # Top 10 White openings
+    sql_white = """
+        SELECT short_opening, COUNT(*) AS cnt
+        FROM my_games
+        WHERE white = %s
+        GROUP BY short_opening
+        ORDER BY cnt DESC
+        LIMIT 10
+    """
+    dbh.execute(sql_white, (my_username,))
+    white_rows = dbh.fetchall()
+
+    # Top 10 Black openings
+    sql_black = """
+        SELECT short_opening, COUNT(*) AS cnt
+        FROM my_games
+        WHERE black = %s
+        GROUP BY short_opening
+        ORDER BY cnt DESC
+        LIMIT 10
+    """
+    dbh.execute(sql_black, (my_username,))
+    black_rows = dbh.fetchall()
+
+    connection.close()
+
+    white_rows = list(white_rows)
+    black_rows = list(black_rows)
+
+    # Separate into lists for Chart.js
+    white_labels = [row[0] for row in white_rows]
+    white_counts = [row[1] for row in white_rows]
+    black_labels = [row[0] for row in black_rows]
+    black_counts = [row[1] for row in black_rows]
+
+    # Pad table rows to max(10) so both columns align
+    max_len = max(len(white_rows), len(black_rows))
+    white_rows_padded = white_rows + [("", 0)] * (max_len - len(white_rows))
+    black_rows_padded = black_rows + [("", 0)] * (max_len - len(black_rows))
+
+    combined_rows = list(zip(range(1, max_len+1), white_rows_padded, black_rows_padded))
+
+    return render_template(
+        "most_common_openings.html",
+        white_labels=white_labels,
+        white_counts=white_counts,
+        black_labels=black_labels,
+        black_counts=black_counts,
+        combined_rows=combined_rows
+    )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
