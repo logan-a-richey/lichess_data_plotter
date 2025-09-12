@@ -19,3 +19,10 @@ Skills learned: sql, mysql_server, pymysql, regex, flask, html, jinga, matplotli
 * explored month by month sql query
 * explored jinga templating and variables
 * added some css to configure the sizing of image, html tables, and hypertext
+
+## Sep 12, 2025
+* created graphs 3 and 4; opening frequency and adoption data
+* explored plotting with chart.js
+* explored javascript to allow for dynamic display options.
+* html table sorting and ordering
+* chart.js on click behavior to warp to entry in html table
