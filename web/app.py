@@ -261,14 +261,20 @@ def get_adoption_data():
     top_adopted = adopted[:10]
     top_been_adopted = been_adopted[:10]
 
+    scatter_adopted = [{"x": p.highest_elo, "y": p.num_win_streaks, "name": p.name} for p in top_adopted]
+    scatter_been_adopted = [{"x": p.highest_elo, "y": p.num_lose_streaks, "name": p.name} for p in top_been_adopted]
+
     return render_template(
         "adoption_data.html",
         adopted=adopted,
         been_adopted=been_adopted,
         top_adopted=top_adopted,
         top_been_adopted=top_been_adopted,
+        scatter_adopted=scatter_adopted,
+        scatter_been_adopted=scatter_been_adopted,
         my_username=my_username
     )
+        
 
 if __name__ == "__main__":
     app.run(debug=True)
