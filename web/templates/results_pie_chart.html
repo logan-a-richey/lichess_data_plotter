@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <title>{{ my_username }} Win-Lose_Draw Rates</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='/images/lichess_logo.png')}}">
+    
     <!-- Dark Theme CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/theme.css') }}">
 
@@ -12,10 +15,10 @@
 <body>
     <div class="page-container">
         <h1> {{ my_username }} Win-Lose-Draw Rates </h1>
-        <canvas id="WhiteChart" width="400" height="400"></canvas>
-        <br> 
-        <br>
-        <canvas id="BlackChart" width="400" height="400"></canvas>
+        <div style="display: felx; justify-content: space-around;">
+            <canvas id="WhiteChart" width="400" height="400" max-width="400" max-height="400"></canvas>
+            <canvas id="BlackChart" width="400" height="400" max-width="400" max-height="400"></canvas>
+        </div>
         <!-- TODO explain text -->
     </div>
 

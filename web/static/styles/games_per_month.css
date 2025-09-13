@@ -1,0 +1,16 @@
+/* games per month */
+
+.chart-container {
+    width: 90%;        /* responsive to screen width */
+    max-width: 1000px; /* cap width */
+    height: 600px;     /* desired chart height */
+    margin: 0 auto;    /* center horizontally */
+    position: relative; /* Chart.js requires this for responsive sizing */
+    border: 2px solid red; /* debug */
+}
+
+#gamesChart {
+    display: block;              /* remove inline-block gaps */
+    width: 100% !important;      /* force full width */
+    height: 100% !important;     /* force full height */
+}

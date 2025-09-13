@@ -21,8 +21,8 @@ body {
 }
 
 .page-container canvas {
-    max-width: 400px;   /* or any desired width */
-    max-height: 400px;  /* or any desired height */
+    max-width: 600px;   /* or any desired width */
+    max-height: 600px;  /* or any desired height */
     margin: 0 auto;
     display: block;
 }

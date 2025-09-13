@@ -3,20 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ my_username }} Games Per Month</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1, h2 { text-align: center; }
-        canvas { display: block; margin: 20px auto; max-width: 1000px; height: 500px !important; }
-        table { border-collapse: collapse; margin: 20px auto; }
-        th, td { border: 1px solid #444; padding: 6px 10px; text-align: center; min-width: 50px; }
-        th { background: #f0f0f0; }
-    </style>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='/images/lichess_logo.png')}}">
+    
+    <!-- Dark Theme CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/games_per_month.css')}}">
+    
 </head>
 <body>
+<div class="page-container">
+
     <h1>{{ my_username }} Games Played Per Month</h1>
 
     <!-- Line chart -->
+    <!--
+    <div class="chart-container">
+        <canvas id="gamesChart"></canvas>
+    </div>
+    -->
+
     <canvas id="gamesChart"></canvas>
 
     <!-- Heatmap-style table -->
@@ -40,7 +47,7 @@
                     {% if ratio > 1 %}{% set ratio = 1 %}{% endif %}
                     {% set red = (255 * ratio)|round %}
                     {% set green = (200 * (1-ratio))|round %}
-                    <td style="background-color: rgba({{ red }}, {{ green }}, 100, 0.6)">
+                    <td style="background-color: rgba({{ red }}, {{ green }}, 100, 0.3)">
                         {{ count }}
                     </td>
                 {% endfor %}
@@ -49,38 +56,25 @@
         </tbody>
     </table>
 
+    <!-- JS -->
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Common Dark Theme Options -->
+    <script src="{{ url_for('static', filename='scripts/common_charts.js') }}"></script>
+
+    <!-- Data from Flask -->
     <script>
         const labels = {{ months|tojson }};
         const data = {{ counts|tojson }};
-
-        new Chart(document.getElementById("gamesChart"), {
-            type: "line",
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: "Games Played",
-                    data: data,
-                    borderColor: "#2196f3",
-                    backgroundColor: "rgba(33, 150, 243, 0.3)",
-                    fill: true,
-                    tension: 0.2,
-                    pointRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    title: { display: true, text: "Monthly Games Played" }
-                },
-                scales: {
-                    x: { title: { display: true, text: "Month" } },
-                    y: { title: { display: true, text: "Games" }, beginAtZero: true }
-                }
-            }
-        });
     </script>
 
+    <!-- Page Source -->
+    <script src="{{ url_for('static', filename='scripts/games_per_month.js')}}"></script>
+
     <p style="text-align:center;"><a href="{{ url_for('index') }}">Back to Home</a></p>
+</div>
+
 </body>
 </html>
 
