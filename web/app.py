@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
 from flask import Flask, Response, render_template, request
-
 from dataclasses import dataclass, field
-
 import json
 import pymysql
-import matplotlib
-matplotlib.use('Agg')
+
+import matplotlib.pyplot as plt
+# matplotlib.use('Agg')
+
+from elo_calc import update_elo 
 
 my_username = "larichey"
 app = Flask(__name__)
@@ -282,6 +283,7 @@ def get_adoption_data():
         my_username=my_username
     )
  
+
 @app.route("/get_top_wins")
 def get_top_wins():
     with open("my_dsn.json") as file:
@@ -359,6 +361,103 @@ def get_top_wins():
         top_rated_titled_wins=top_rated_titled_wins,
         top_casual_wins=top_casual_wins,
         top_casual_titled_wins=top_casual_titled_wins,
+        my_username=my_username
+    )
+
+import matplotlib.dates as mdates
+
+@app.route("/get_rating_simulation")
+def get_rating_simulation():
+    # get casual rating bullet elo graph 
+
+    with open("my_dsn.json") as file:
+        dsn = json.load(file)
+
+    # connection = pymysql.connect(**dsn, cursorclass=pymysql.cursors.DictCursor)
+    # dbh = connection.cursor()
+    
+    connection = pymysql.connect(**dsn)
+    dbh = connection.cursor(pymysql.cursors.DictCursor)
+
+    sql = """
+    SELECT id, event, site, white, black, result, 
+           whiteelo, blackelo, my_date
+    FROM my_games
+    WHERE 
+        (white=%s OR black=%s) 
+        AND (white not like %s) 
+        AND (black not like %s) 
+        AND event='casual bullet game'
+    ORDER BY my_date ASC
+    """
+
+    dbh.execute(sql, (my_username, my_username, '%lichess AI%', '%lichess AI%') )
+    rows = dbh.fetchall()
+    connection.close()
+    
+    test_elo = 1500 # starting rating
+    
+    times = [] # TODO game idx - want to make Y-M for ticks
+    ratings = []
+
+
+    for g_idx, g in enumerate(rows):
+        usr_elo = 1200
+        opp_elo = 1200
+        
+        # Rated vs casual
+        is_casual: bool = ("casual" in g["event"].lower()) or \
+                    (not g["whiteratingdiff"] and not g["blackratingdiff"])
+        
+        usr_is_white = g["white"] == my_username 
+
+        usr_result = "draw"
+    
+
+        if usr_is_white:            
+            usr_elo = g["whiteelo"]
+            opp_elo = g["blackelo"]
+
+            if g["result"] == "1-0":
+                usr_result = "win"
+            elif g["result"] == "0-1":
+                usr_result = "loss"
+            else:
+                usr_result = "draw"
+        else:
+            # usr_is_black    
+            opp_elo = g["whiteelo"]
+            usr_elo = g["blackelo"]
+            
+            if g["result"] == "0-1":
+                usr_result = "win"
+            elif g["result"] == "1-0":
+                usr_result = "loss"
+            else:
+                usr_result = "draw"
+
+        test_elo, _ = update_elo(test_elo, opp_elo, usr_result)
+        
+        # x axis (time), y axis (rating)
+        # times.append(g["my_date"])
+        times.append(g_idx)
+        ratings.append(test_elo)
+    
+    # DEBUG
+    # plt.plot(times, ratings)
+    # plt.ylabel("Elo")
+    # plt.title("Casual Rating Sim")
+    # plt.show()
+    
+    max_elo = max(ratings)
+    avg_elo = int(sum(ratings) / len(ratings))
+    print("[INFO] max casual elo =~ {}".format(max_elo))
+    print("[INFO] avg casual elo =~ {}".format(avg_elo))
+
+    return render_template(
+        "rating_simulation.html",
+        times=times,
+        ratings=ratings,
         my_username=my_username
     )
 
