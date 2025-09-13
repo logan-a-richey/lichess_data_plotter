@@ -28,4 +28,37 @@
 games starting in a3, a4, h3, h4, b4, g4, f3, Na3, Nh3
 games starting in ...a6 ...a5, ...h6, ...h5, ...b5, ...g5, ...f6, ...Na6, ...Nh6
 
+# TODO 
+step 0:
+* upload new games file, db parses, reload page, show index dashboard
+* extend data to other players 
+* combobox for previous player data files 
 
+graph 1: openings
+* pie charts not side by side
+
+graph 2: games per month
+* chart width needs to fill width of div
+
+graph 3: most common openings
+* no css
+* need to separate table
+* triple bar chart for opening to show win-loss-draw for each
+* p usr was most successful at x opening, least to y opening
+
+graph 4: adoption
+* no css
+* remove bar chart
+
+graph 5: top wins
+* no css
+* back at bottom 
+
+graph 6: casual rating simulation
+* plot differently? 
+* datasets: [highest, avg, lowest] per month
+* make line plot width 100%
+* p text to explain data. 
+
+graph 7: termination type (ie checkmate with pawn, rook, king, etc.)
+* not impl
