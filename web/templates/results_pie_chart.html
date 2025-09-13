@@ -4,76 +4,37 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ my_username }} Win-Lose_Draw Rates</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        canvas { display: block; margin: 20px auto; }
-        table { border-collapse: collapse; margin: 20px auto; }
-        th, td { border: 1px solid #444; padding: 6px 10px; text-align: center; }
-        th { background: #f0f0f0; }
-    </style>
+    
+    <!-- Dark Theme CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/theme.css') }}">
+
 </head>
 <body>
-    <h1 style="text-align:center;">{{ my_username }} Win-Lose-Draw Rates</h1>
-
-    <canvas id="whiteChart" width="300" height="300"></canvas>
-    <canvas id="blackChart" width="300" height="300"></canvas>
-
-    <h2 style="text-align:center;">Raw Counts</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Color</th>
-                <th>Wins</th>
-                <th>Losses</th>
-                <th>Draws</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>White</td>
-                <td>{{ white_results.wins }}</td>
-                <td>{{ white_results.losses }}</td>
-                <td>{{ white_results.draws }}</td>
-            </tr>
-            <tr>
-                <td>Black</td>
-                <td>{{ black_results.wins }}</td>
-                <td>{{ black_results.losses }}</td>
-                <td>{{ black_results.draws }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <script>
-        const whiteData = {
-            labels: ["Wins", "Losses", "Draws"],
-            datasets: [{
-                data: [{{ white_results.wins }}, {{ white_results.losses }}, {{ white_results.draws }}],
-                backgroundColor: ["#4caf50", "#f44336", "#2196f3"]
-            }]
-        };
-        const blackData = {
-            labels: ["Wins", "Losses", "Draws"],
-            datasets: [{
-                data: [{{ black_results.wins }}, {{ black_results.losses }}, {{ black_results.draws }}],
-                backgroundColor: ["#4caf50", "#f44336", "#2196f3"]
-            }]
-        };
-
-        new Chart(document.getElementById("whiteChart"), {
-            type: "pie",
-            data: whiteData,
-            options: { plugins: { title: { display: true, text: "As White" } } }
-        });
-        new Chart(document.getElementById("blackChart"), {
-            type: "pie",
-            data: blackData,
-            options: { plugins: { title: { display: true, text: "As Black" } } }
-        });
-    </script>
+    <div class="page-container">
+        <h1> {{ my_username }} Win-Lose-Draw Rates </h1>
+        <canvas id="WhiteChart" width="400" height="400"></canvas>
+        <br> 
+        <br>
+        <canvas id="BlackChart" width="400" height="400"></canvas>
+        <!-- TODO explain text -->
+    </div>
 
     <p style="text-align:center;"><a href="{{ url_for('index') }}">Back to Home</a></p>
+
+    <!-- Javascript -->
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Common Dark Theme Options -->
+    <script src="{{ url_for('static', filename='scripts/common_charts.js') }}"></script>
+
+    <!-- Page Code -->
+    <script> 
+        // data from Flask
+        const whiteData = {{ white_results | tojson }};
+        const blackData = {{ black_results | tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='scripts/results_pie_chart.js')}}"></script>
+
 </body>
 </html>
-
