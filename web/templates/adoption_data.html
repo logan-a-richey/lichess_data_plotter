@@ -26,33 +26,35 @@
         </div>
         <canvas id="barAdopted"></canvas>
         <canvas id="scatterAdopted"></canvas>
-        <table id="tableAdopted">
-            <thead>
-                <tr>
-                    <th data-sort="num" data-dir="desc">Num Adoptions ▼</th>
-                    <th data-sort="name" data-dir="asc">Player Name</th>
-                    <th data-sort="elo" data-dir="desc">Highest Elo ▼</th>
-                    <th>Sites</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in adopted %}
-                <tr>
-                    <td>{{ p.num_win_streaks }}</td>
-                    <td>{{ p.name }}</td>
-                    <td>{{ p.highest_elo }}</td>
-                    <td>
-                    <ul>
-                    {% for s in p.win_sites %}
-                        <li><a href="{{ s }}" target="_blank">{{ s }}</a></li>
+        <div class="table-container">
+            <table id="tableAdopted">
+                <thead>
+                    <tr>
+                        <th data-sort="num" data-dir="desc">Num Adoptions ▼</th>
+                        <th data-sort="name" data-dir="asc">Player Name</th>
+                        <th data-sort="elo" data-dir="desc">Highest Elo ▼</th>
+                        <th>Sites</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in adopted %}
+                    <tr>
+                        <td>{{ p.num_win_streaks }}</td>
+                        <td>{{ p.name }}</td>
+                        <td>{{ p.highest_elo }}</td>
+                        <td>
+                        <ul>
+                        {% for s in p.win_sites %}
+                            <li><a href="{{ s }}" target="_blank">{{ s }}</a></li>
+                        {% endfor %}
+                        </ul>
+                        </td>
+                    </tr>
                     {% endfor %}
-                    </ul>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    
+                </tbody>
+            </table>
+        </div>
+
         <!-- Been Adopted -->
         <hr>
         <h2>{{ my_username }} been-adopted data:</h2>
@@ -69,32 +71,34 @@
         <canvas id="barBeenAdopted"></canvas>
         <canvas id="scatterBeenAdopted"></canvas>
 
-        <table id="tableBeenAdopted">
-            <thead>
-                <tr>
-                    <th data-sort="num" data-dir="desc">Num Times Adopted ▼</th>
-                    <th data-sort="name" data-dir="asc">Player Name</th>
-                    <th data-sort="elo" data-dir="desc">Highest Elo ▼</th>
-                    <th>Sites</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in been_adopted %}
-                <tr>
-                    <td>{{ p.num_lose_streaks }}</td>
-                    <td>{{ p.name }}</td>
-                    <td>{{ p.highest_elo }}</td>
-                    <td>
-                    <ul>
-                        {% for s in p.lose_sites %}
-                        <li><a href="{{ s }}" target="_blank">{{ s }}</a></li>
-                        {% endfor %}
-                    </ul>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-container">
+            <table id="tableBeenAdopted">
+                <thead>
+                    <tr>
+                        <th data-sort="num" data-dir="desc">Num Times Adopted ▼</th>
+                        <th data-sort="name" data-dir="asc">Player Name</th>
+                        <th data-sort="elo" data-dir="desc">Highest Elo ▼</th>
+                        <th>Sites</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in been_adopted %}
+                    <tr>
+                        <td>{{ p.num_lose_streaks }}</td>
+                        <td>{{ p.name }}</td>
+                        <td>{{ p.highest_elo }}</td>
+                        <td>
+                        <ul>
+                            {% for s in p.lose_sites %}
+                            <li><a href="{{ s }}" target="_blank">{{ s }}</a></li>
+                            {% endfor %}
+                        </ul>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
         <script>
             const fullAdopted = {{ adopted|tojson }};

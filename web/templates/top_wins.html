@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Top Wins - {{ my_username }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/top_wins.css') }}">
+</head>
+<body>
+    <h1>Top Wins for {{ my_username }}</h1>
+
+    <p style="text-align:center;"><a href="{{ url_for('index') }}">Back to Home</a></p>
+    
+    <div class="controls">
+        <label for="winCategory">Select Category:</label>
+        <select id="winCategory">
+            <option value="rated">Rated Wins</option>
+            <option value="rated_titled">Rated Titled Wins</option>
+            <option value="casual">Casual Wins</option>
+            <option value="casual_titled">Casual Titled Wins</option>
+        </select>
+    </div>
+
+    <div id="tableContainer" class="table-container"></div>
+
+    <script>
+        const winsData = {
+            rated: {{ top_rated_wins|tojson }},
+            rated_titled: {{ top_rated_titled_wins|tojson }},
+            casual: {{ top_casual_wins|tojson }},
+            casual_titled: {{ top_casual_titled_wins|tojson }}
+        };
+
+        function renderTable(category) {
+            const data = winsData[category] || [];
+            let html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Opponent</th>
+                        <th>Title</th>
+                        <th>Rating</th>
+                        <th>Site</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+            data.forEach((g, idx) => {
+                html += `
+                <tr>
+                    <td>${idx+1}</td>
+                    <td>${g.opp_name}</td>
+                    <td>${g.opp_title || ""}</td>
+                    <td>${g.opp_elo}</td>
+                    <td><a href="${g.site}" target="_blank">${g.site}</a></td>
+                </tr>
+                `;
+            });
+            html += `</tbody></table>`;
+            document.getElementById("tableContainer").innerHTML = html;
+        }
+
+        document.getElementById("winCategory").addEventListener("change", (e) => {
+            renderTable(e.target.value);
+        });
+
+        // Initial render
+        renderTable("rated");
+    </script>
+</body>
+</html>
+

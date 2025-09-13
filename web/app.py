@@ -281,7 +281,86 @@ def get_adoption_data():
         scatter_been_adopted=scatter_been_adopted,
         my_username=my_username
     )
-        
+ 
+@app.route("/get_top_wins")
+def get_top_wins():
+    with open("my_dsn.json") as file:
+        dsn = json.load(file)
+
+    connection = pymysql.connect(**dsn)
+    dbh = connection.cursor(pymysql.cursors.DictCursor)
+
+    sql = """
+    SELECT id, event, site, white, black, result, 
+           whiteelo, blackelo, whitetitle, blacktitle, 
+           whiteratingdiff, blackratingdiff, my_date
+    FROM my_games
+    WHERE white=%s OR black=%s
+    ORDER BY my_date ASC
+    """
+    dbh.execute(sql, (my_username, my_username))
+    rows = dbh.fetchall()
+    connection.close()
+
+    top_rated_wins = []
+    top_rated_titled_wins = []
+    top_casual_wins = []
+    top_casual_titled_wins = []
+
+    for g in rows:
+        # Am I white or black?
+        am_white = g["white"] == my_username
+        opp_name = g["black"] if am_white else g["white"]
+        opp_elo = g["blackelo"] if am_white else g["whiteelo"]
+        opp_title = g["blacktitle"] if am_white else g["whitetitle"]
+
+        # Did I win?
+        i_won = (am_white and g["result"] == "1-0") or \
+                (not am_white and g["result"] == "0-1")
+        if not i_won:
+            continue
+
+        # Rated vs casual
+        is_casual = ("casual" in g["event"].lower()) or \
+                    (not g["whiteratingdiff"] and not g["blackratingdiff"])
+
+        # Titled opponent?
+        is_titled = bool(opp_title.strip())
+
+        record = {
+            "opp_name": opp_name,
+            "opp_elo": opp_elo,
+            "opp_title": opp_title,
+            "site": g["site"],
+            "date": g["my_date"],
+            "game_id": g["id"]
+        }
+
+        if not is_casual and not is_titled:
+            top_rated_wins.append(record)
+        elif not is_casual and is_titled:
+            top_rated_titled_wins.append(record)
+        elif is_casual and not is_titled:
+            top_casual_wins.append(record)
+        else:
+            top_casual_titled_wins.append(record)
+
+    # Sort each category by opp_elo, highest first, and take top 50
+    num_games = 100
+    key_sort = lambda r: r["opp_elo"]
+    top_rated_wins = sorted(top_rated_wins, key=key_sort, reverse=True)[:num_games]
+    top_rated_titled_wins = sorted(top_rated_titled_wins, key=key_sort, reverse=True)[:num_games]
+    top_casual_wins = sorted(top_casual_wins, key=key_sort, reverse=True)[:num_games]
+    top_casual_titled_wins = sorted(top_casual_titled_wins, key=key_sort, reverse=True)[:num_games]
+
+    return render_template(
+        "top_wins.html",
+        top_rated_wins=top_rated_wins,
+        top_rated_titled_wins=top_rated_titled_wins,
+        top_casual_wins=top_casual_wins,
+        top_casual_titled_wins=top_casual_titled_wins,
+        my_username=my_username
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
