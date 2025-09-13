@@ -1,19 +1,22 @@
 <!DOCTYPE HTML>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Flask App</title>
-    </head>
-    <body>
-        <h1>{{ my_username }} Lichess Analytics Dashboard:</h1>
-        <ul>
-            <li><a href="{{ url_for('get_results_pie_chart') }}">Results Pie Chart</a></li>
-            <li><a href="{{ url_for('get_games_per_month') }}">Games Per Month</a></li>    
-            <li><a href="{{ url_for('get_most_common_openings') }}">Most Common Openings</a></li>
-            <li><a href="{{url_for('get_adoption_data')}}">Adoption Data</li>
-            <li><a href="{{url_for('get_top_wins')}}">Top Wins</li>
-        </ul>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <title>Flask App</title>
+    <!-- Dark Theme CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/theme.css') }}">
+</head>
+<body>
+    <div class="page-container">
+    <h1>{{ my_username }} Lichess Analytics Dashboard:</h1>
+    <ul>
+        <li><a href="{{ url_for('get_results_pie_chart') }}">Results Pie Chart</a></li>
+        <li><a href="{{ url_for('get_games_per_month') }}">Games Per Month</a></li>    
+        <li><a href="{{ url_for('get_most_common_openings') }}">Most Common Openings</a></li>
+        <li><a href="{{url_for('get_adoption_data')}}">Adoption Data</li>
+        <li><a href="{{url_for('get_top_wins')}}">Top Wins</li>
+    </ul>
+    </div>
+</body>
 </html>
-
 
