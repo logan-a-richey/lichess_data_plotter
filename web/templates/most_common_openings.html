@@ -3,95 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ my_username }} Most Common Openings</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1, h2 { text-align: center; }
-        .charts { display: flex; justify-content: space-around; margin: 20px 0; }
-        canvas { width: 400px; height: 400px; }
-        table { border-collapse: collapse; margin: 20px auto; }
-        th, td { border: 1px solid #444; padding: 6px 10px; text-align: center; min-width: 120px; }
-        th { background: #f0f0f0; }
-    </style>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='/images/lichess_logo.png')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/results_pie_chart.css') }}">
 </head>
 <body>
-    <h1>{{ my_username }} Most Common Openings</h1>
+    <div class="page-container">
+        <h1>{{ my_username }} Most Common Openings</h1>
 
-    <div class="charts">
-        <div>
-            <h2>As White</h2>
-            <canvas id="whiteChart"></canvas>
-        </div>
-        <div>
-            <h2>As Black</h2>
-            <canvas id="blackChart"></canvas>
-        </div>
+        <canvas style="display: inline" id="whiteChart"></canvas>
+        <canvas style="display: inline" id="blackChart"></canvas>
+        <br>
+        <h2>Top Openings (White vs Black)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>White Opening</th>
+                    <th>White Count</th>
+                    <th>Black Opening</th>
+                    <th>Black Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rank, (w_opening, w_count), (b_opening, b_count) in combined_rows %}
+                <tr>
+                    <td>{{ rank }}</td>
+                    <td>{{ w_opening }}</td>
+                    <td>{{ w_count }}</td>
+                    <td>{{ b_opening }}</td>
+                    <td>{{ b_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <p>Above show the most popular openings played by {{ my_username }} with White and Black pieces.</p>
+
     </div>
 
-    <h2>Top Openings (White vs Black)</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>White Opening</th>
-                <th>White Count</th>
-                <th>Black Opening</th>
-                <th>Black Count</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for rank, (w_opening, w_count), (b_opening, b_count) in combined_rows %}
-            <tr>
-                <td>{{ rank }}</td>
-                <td>{{ w_opening }}</td>
-                <td>{{ w_count }}</td>
-                <td>{{ b_opening }}</td>
-                <td>{{ b_count }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <script>
         const whiteLabels = {{ white_labels|tojson }};
         const whiteCounts = {{ white_counts|tojson }};
         const blackLabels = {{ black_labels|tojson }};
         const blackCounts = {{ black_counts|tojson }};
-
-        new Chart(document.getElementById("whiteChart"), {
-            type: "pie",
-            data: {
-                labels: whiteLabels,
-                datasets: [{
-                    data: whiteCounts,
-                    backgroundColor: [
-                        "#e6194b","#3cb44b","#ffe119","#4363d8","#f58231",
-                        "#911eb4","#46f0f0","#f032e6","#bcf60c","#fabebe"
-                    ]
-                }]
-            },
-            options: {
-                plugins: { title: { display: true, text: "Top White Openings" } }
-            }
-        });
-
-        new Chart(document.getElementById("blackChart"), {
-            type: "pie",
-            data: {
-                labels: blackLabels,
-                datasets: [{
-                    data: blackCounts,
-                    backgroundColor: [
-                        "#e6194b","#3cb44b","#ffe119","#4363d8","#f58231",
-                        "#911eb4","#46f0f0","#f032e6","#bcf60c","#fabebe"
-                    ]
-                }]
-            },
-            options: {
-                plugins: { title: { display: true, text: "Top Black Openings" } }
-            }
-        });
     </script>
+
+    <script src="{{ url_for('static', filename='scripts/most_common_openings.js')}}"></script>
 
     <p style="text-align:center;"><a href="{{ url_for('index') }}">Back to Home</a></p>
 </body>
