@@ -1,26 +1,114 @@
 #!/usr/bin/env python3
 
-from flask import Flask, Response, render_template, request
+from flask import Flask, Response, render_template, request, redirect, url_for, jsonify
 from dataclasses import dataclass, field
 import json
 import pymysql
-
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 # matplotlib.use('Agg')
 # from pandas import to_datetime
 from collections import defaultdict
 from datetime import datetime
+import os 
+import subprocess 
 
 from elo_calc import update_elo 
 
-my_username = "larichey"
 app = Flask(__name__)
+
+UPLOAD_FOLDER = "uploads"
+WORK_FOLDER = "work"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(WORK_FOLDER, exist_ok=True)
+
+my_username = "larichey" # TODO find most common user
+
+################################################################################
+# File upload form and loading methods 
 
 @app.route("/")
 def index():
+    return render_template("index.html")  # upload form
+
+@app.route("/upload", methods=["POST"])
+def upload():
+    if "file" not in request.files:
+        return "No file uploaded", 400
+
+    file = request.files["file"]
+    if file.filename == "":
+        return "No selected file", 400
+
+    # Save uploaded file
+    filepath = os.path.join(UPLOAD_FOLDER, file.filename)
+    file.save(filepath)
+
+    # Paths for done flag
+    done_file = os.path.join(WORK_FOLDER, "done.txt")
+
+    # If leftover done.txt exists, clear it
+    if os.path.exists(done_file):
+        os.remove(done_file)
+
+    # Run parser in a new process (non-blocking)
+    subprocess.Popen(
+        ["python3", "db_loader.py", filepath, done_file],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        start_new_session=True
+    )
+
+    return redirect(url_for("loading"))
+
+@app.route("/loading")
+def loading():
+    return render_template("loading.html")
+
+@app.route("/status")
+def status():
+    done_file = os.path.join(WORK_FOLDER, "done.txt")
+    if os.path.exists(done_file):
+        return jsonify({"status": "done"})
+    else:
+        return jsonify({"status": "processing"})
+
+def get_most_common_user():
+    with open("my_dsn.json") as file:
+        dsn = json.load(file)
+
+    connection = pymysql.connect(**dsn)
+    dbh = connection.cursor()
+
+    sql_white_result = """
+    SELECT white, count(white) as k from my_games group by white order by k desc limit 1
+    """
+    sql_black_result = """
+    SELECT black, count(black) as k from my_games group by black order by k desc limit 1
+    """
+    
+    dbh.execute(sql_white_result)
+    white_name, white_count = dbh.fetchone()
+
+    dbh.execute(sql_black_result)
+    black_name, black_count = dbh.fetchone()
+    
+    connection.close()
+
+    if white_count >= black_count:
+        return white_name
+    else:
+        return black_name
+
+################################################################################
+# Dashboard methods 
+
+@app.route("/dashboard")
+def dashboard():
+    my_username = get_most_common_user()
+
     return render_template(
-        "index.html",
+        "dashboard.html",
         my_username=my_username
     )
 

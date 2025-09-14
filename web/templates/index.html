@@ -1,25 +1,62 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Flask App</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='/images/beaker.ico')}}">
-
-    <!-- Dark Theme CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/theme.css') }}">
+  <title>Upload PGN File</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .upload-box {
+      background: white;
+      padding: 2em;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 1.5em;
+      color: #333;
+    }
+    input[type=file] {
+      margin: 1em 0;
+    }
+    button {
+      background: #007bff;
+      border: none;
+      color: white;
+      padding: 0.6em 1.2em;
+      border-radius: 4px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .note {
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 1em;
+    }
+  </style>
 </head>
 <body>
-    <div class="page-container">
-    <h1>{{ my_username }} Lichess Analytics Dashboard:</h1>
-        <a href="{{ url_for('get_results_pie_chart') }}">Results Pie Chart</a><br>
-        <a href="{{ url_for('get_games_per_month') }}">Games Per Month</a><br>    
-        <a href="{{ url_for('get_most_common_openings') }}">Most Common Openings</a><br>
-        <a href="{{ url_for('get_adoption_data') }}">Adoption Data</a><br>
-        <a href="{{ url_for('get_top_wins')}}">Top Wins</a><br>
-        <a href="{{ url_for('get_rating_simulation') }}")>Casual Rating Simulation</a><br>
-    </div>
+  <div class="upload-box">
+    <h1>Upload Your Games</h1>
+    <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+      <input type="file" name="file" accept=".pgn" required>
+      <br>
+      <button type="submit">Upload & Analyze</button>
+    </form>
+    <p class="note">Please upload a PGN file (e.g. <code>games.pgn</code>). Large files (50k+ games) may take ~30 seconds to process.</p>
+  </div>
 </body>
 </html>
-

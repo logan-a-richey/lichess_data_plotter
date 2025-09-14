@@ -7,9 +7,16 @@ import pymysql
 import json
 import sys
 import re
-from tqdm import tqdm 
+# from tqdm import tqdm 
 from dataclasses import dataclass, asdict
 from typing import List
+
+import os 
+
+# UPLOAD_FOLDER = "uploads"
+# os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+WORK_FOLDER = "work"
+os.makedirs(WORK_FOLDER, exist_ok=True)
 
 # load db creditials
 dsn = {}
@@ -145,16 +152,10 @@ def create_and_insert_game(record: dict):
         insert_batch(batch)
         batch = []
 
-def main():
-    if len(sys.argv) < 2:
-        print("Usage: python parser.py <filename>")
-        sys.exit(1)
-
-    filename = sys.argv[1]
-
-    total_lines = 0 
-    with open(filename, 'r', encoding="utf-8") as f:
-        total_lines = sum(1 for line in f) # count lines
+def parse_pgn(filename):
+    # total_lines = 0 
+    # with open(filename, 'r', encoding="utf-8") as f:
+    #    total_lines = sum(1 for line in f) # count lines
 
     try:
         fh = open(filename, 'r', encoding="utf-8")
@@ -163,13 +164,12 @@ def main():
         sys.exit(1)
 
     record = {}
-
-    print("reading ...")
     
     global batch
     global batch_size 
 
-    for line in tqdm(fh, total=total_lines, desc="Processing..."):
+    # for line in tqdm(fh, total=total_lines, desc="Processing..."):
+    for line in fh:
         line = line.strip()
         if not line: continue
         if line.startswith("#"): continue
@@ -245,6 +245,19 @@ def main():
     
     fh.close()
     connection.close()
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python parser.py <pgn_file>")
+        sys.exit(1)
+
+    filename = sys.argv[1]
+    parse_pgn(filename)
+
+    done_file = "done.txt"
+    done_file_path = os.path.join(WORK_FOLDER, done_file)
+    with open(done_file_path, 'w') as f:
+        f.write("done")
 
 if __name__ == "__main__":
     main()
