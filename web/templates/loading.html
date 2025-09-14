@@ -1,38 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Processing Games...</title>
-<style>
-  .spinner {
-    margin: 2em auto;
-    border: 6px solid #f3f3f3; /* light gray */
-    border-top: 6px solid #007bff; /* blue */
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    animation: spin 1s linear infinite;
-  }
+    <title>Processing Games...</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='/images/beaker.ico')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/theme.css') }}">
+    <style>
+        .spinner {
+            margin: 2em auto;
+            border: 6px solid #f3f3f3; /* light gray */
+            border-top: 6px solid #007bff; /* blue */
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-</style>
-
-  <script>
-    async function checkStatus() {
-      const res = await fetch("{{ url_for('status') }}");
-      const data = await res.json();
-      if (data.status === "done") {
-        window.location.href = "{{ url_for('dashboard') }}";
-      }
-    }
-    setInterval(checkStatus, 3000); // poll every 3 seconds
-  </script>
+    <script>
+        async function checkStatus() {
+            const res = await fetch("{{ url_for('status') }}");
+            const data = await res.json();
+            if (data.status === "done") {
+                window.location.href = "{{ url_for('dashboard') }}";
+            }
+        }
+        setInterval(checkStatus, 3000); // poll every 3 seconds
+    </script>
 </head>
 <body>
-  <h1>We’re parsing your games...</h1>
-  <p>This may take 30s for large PGN files.</p>
-  <div class="spinner">⏳</div>
+    <div class="page-container">
+        <h1>We’re parsing your games...</h1>
+        <p>This may take 30s for large PGN files.</p>
+        <div class="spinner"></div>
+    </div>
 </body>
 </html>

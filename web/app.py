@@ -22,7 +22,8 @@ WORK_FOLDER = "work"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(WORK_FOLDER, exist_ok=True)
 
-my_username = "larichey" # TODO find most common user
+# default global variable
+my_username = "larichey"
 
 ################################################################################
 # File upload form and loading methods 
@@ -80,12 +81,8 @@ def get_most_common_user():
     connection = pymysql.connect(**dsn)
     dbh = connection.cursor()
 
-    sql_white_result = """
-    SELECT white, count(white) as k from my_games group by white order by k desc limit 1
-    """
-    sql_black_result = """
-    SELECT black, count(black) as k from my_games group by black order by k desc limit 1
-    """
+    sql_white_result = "SELECT white, count(white) as k from my_games group by white order by k desc limit 1"
+    sql_black_result = "SELECT black, count(black) as k from my_games group by black order by k desc limit 1"
     
     dbh.execute(sql_white_result)
     white_name, white_count = dbh.fetchone()
@@ -120,12 +117,8 @@ def get_results_pie_chart():
     connection = pymysql.connect(**dsn)
     dbh = connection.cursor()
 
-    sql_white_result = """
-    SELECT COUNT(*) FROM my_games WHERE (white=%s AND result=%s)
-    """
-    sql_black_result = """
-    SELECT COUNT(*) FROM my_games WHERE (black=%s AND result=%s)
-    """
+    sql_white_result = "SELECT COUNT(*) FROM my_games WHERE (white=%s AND result=%s) "
+    sql_black_result = "SELECT COUNT(*) FROM my_games WHERE (black=%s AND result=%s) "
 
     white_results = {"wins": 0, "losses": 0, "draws": 0}
     black_results = {"wins": 0, "losses": 0, "draws": 0}
@@ -375,7 +368,6 @@ def get_adoption_data():
         my_username=my_username
     )
  
-
 @app.route("/get_top_wins")
 def get_top_wins():
     with open("my_dsn.json") as file:
@@ -455,7 +447,6 @@ def get_top_wins():
         top_casual_titled_wins=top_casual_titled_wins,
         my_username=my_username
     )
-
 
 def do_matplot_rating_sim():
     with open("my_dsn.json") as file:

@@ -13,8 +13,6 @@ from typing import List
 
 import os 
 
-# UPLOAD_FOLDER = "uploads"
-# os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 WORK_FOLDER = "work"
 os.makedirs(WORK_FOLDER, exist_ok=True)
 
