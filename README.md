@@ -93,8 +93,8 @@ web/
 ### Installation
 ```bash
 # Clone repo
-git clone https://github.com/yourusername/chess-dashboard.git
-cd chess-dashboard
+git clone https://github.com/logan-a-richey/lichess_data_plotter.git
+cd lichess_data_plotter
 
 # Install dependencies
 pip install -r requirements.txt
