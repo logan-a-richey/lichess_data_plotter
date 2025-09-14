@@ -8,8 +8,9 @@ import pymysql
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 # matplotlib.use('Agg')
-from pandas import to_datetime
+# from pandas import to_datetime
 from collections import defaultdict
+from datetime import datetime
 
 from elo_calc import update_elo 
 
@@ -450,20 +451,21 @@ def get_rating_simulation():
     FROM my_games
     WHERE 
         (white=%s OR black=%s) 
-        AND (white NOT LIKE %s) 
-        AND (black NOT LIKE %s) 
         AND event='casual bullet game'
     ORDER BY my_date ASC
     """
-    dbh.execute(sql, (my_username, my_username, '%lichess AI%', '%lichess AI%'))
+    dbh.execute(sql, (my_username, my_username))
     rows = dbh.fetchall()
     connection.close()
 
     monthly_elos = defaultdict(list)  # { "YYYY-MM": [elos...] }
     test_elo = 1500
     k_factor = 10
-
+    bot_name = "lichess AI"
+    
     for g in rows:
+        if bot_name in g["white"] or bot_name in g["black"]:
+            continue
         usr_is_white = g["white"] == my_username
         opp_elo = g["blackelo"] if usr_is_white else g["whiteelo"]
         usr_result = "draw"
@@ -479,7 +481,8 @@ def get_rating_simulation():
         test_elo, _ = update_elo(test_elo, opp_elo, usr_result, k_factor)
 
         # Group by YYYY-MM
-        month = to_datetime(g["my_date"]).strftime("%Y-%m")
+        # month = to_datetime(g["my_date"]).strftime("%Y-%m")
+        month = g["my_date"].strftime("%Y-%m")
         monthly_elos[month].append(test_elo)
 
     # Aggregate per month
@@ -520,5 +523,5 @@ def get_rating_simulation():
     )
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
 

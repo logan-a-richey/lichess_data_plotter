@@ -49,7 +49,10 @@ CREATE TABLE `my_games` (
   `last_piece` char(1) NOT NULL DEFAULT 'P',
   PRIMARY KEY (`id`),
   UNIQUE KEY `gameid` (`gameid`),
-  KEY `my_date` (`my_date`)
+  KEY `my_date` (`my_date`),
+  INDEX(white), 
+  INDEX(black), 
+  INDEX(event)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

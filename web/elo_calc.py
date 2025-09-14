@@ -41,3 +41,4 @@ def update_elo(
     new_rating_b = rating_b + k_factor * (score_b - expected_b)
     
     return round(new_rating_a), round(new_rating_b)
+
