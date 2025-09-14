@@ -1,0 +1,6 @@
+.scroll-container {
+    width: 95%;
+    height: 600px;
+    border: 1px solid #ccc;
+    overflow: auto; /* Adds scrollbars only when content overflows */
+}

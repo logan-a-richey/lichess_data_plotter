@@ -10,6 +10,7 @@ const fullBeenAdoptedCounts = fullBeenAdopted.map(p=>p.num_lose_streaks);
 const fullBeenAdoptedScatter = fullBeenAdopted.map(p=>({x:p.highest_elo, y:p.num_lose_streaks, name:p.name}));
 
 // --- Init Charts --- 
+/*
 let barAdoptedChart = new Chart(document.getElementById("barAdopted"), {
     type: "bar",
     data: { labels: [], datasets: [{ label:"Num Adoptions", data: [], backgroundColor:"#4caf50" }] },
@@ -21,6 +22,7 @@ let barBeenAdoptedChart = new Chart(document.getElementById("barBeenAdopted"), {
     data: { labels: [], datasets: [{ label:"Num Times Adopted", data: [], backgroundColor:"#f44336" }] },
     options: { responsive:true, plugins:{ legend:{display:false}, title:{display:true,text:"Top Players Who Adopted Me"}} }
 });
+*/
 
 let scatterAdoptedChart = new Chart(document.getElementById("scatterAdopted"), {
     type: "scatter",
@@ -42,9 +44,11 @@ let scatterBeenAdoptedChart = new Chart(document.getElementById("scatterBeenAdop
     }
 });
 
+/*
 // Bar charts
 barAdoptedChart.options.onClick = (evt, elements) => chartClickHandler('tableAdopted', evt, barAdoptedChart);
 barBeenAdoptedChart.options.onClick = (evt, elements) => chartClickHandler('tableBeenAdopted', evt, barBeenAdoptedChart);
+*/
 
 // Scatter charts
 scatterAdoptedChart.options.onClick = (evt, elements) => chartClickHandler('tableAdopted', evt, scatterAdoptedChart);
@@ -61,7 +65,7 @@ function scatterClickHandler(tableId, evt, elements){
         for(let row of rows){
             if(row.cells[1].innerText === dp.name){
                 row.scrollIntoView({behavior:"smooth",block:"center"});
-                row.style.backgroundColor="#ffff99";
+                row.style.backgroundColor="#0000ff";
                 setTimeout(()=>row.style.backgroundColor="",2000);
                 break;
             }
@@ -105,15 +109,6 @@ function updateCharts(limitAdopted, limitBeen){
     const la = limitAdopted==="all"?fullAdopted.length:parseInt(limitAdopted);
     const lb = limitBeen==="all"?fullBeenAdopted.length:parseInt(limitBeen);
 
-    // Bar charts
-    barAdoptedChart.data.labels = fullAdoptedNames.slice(0,la);
-    barAdoptedChart.data.datasets[0].data = fullAdoptedCounts.slice(0,la);
-    barAdoptedChart.update();
-
-    barBeenAdoptedChart.data.labels = fullBeenAdoptedNames.slice(0,lb);
-    barBeenAdoptedChart.data.datasets[0].data = fullBeenAdoptedCounts.slice(0,lb);
-    barBeenAdoptedChart.update();
-
     // Scatter charts
     scatterAdoptedChart.data.datasets[0].data = fullAdoptedScatter.slice(0,la);
     scatterAdoptedChart.update();
@@ -134,7 +129,7 @@ function chartClickHandler(tableId, evt, chart){
         for(let row of rows){
             if(row.cells[1].innerText === name){
                 row.scrollIntoView({behavior:"smooth", block:"center"});
-                row.style.backgroundColor="#ffff99";
+                row.style.backgroundColor="#0000ff";
                 setTimeout(()=>row.style.backgroundColor="",2000);
                 break;
             }
