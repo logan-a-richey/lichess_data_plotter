@@ -1,18 +1,5 @@
 /* top_wins.css */ 
 
-h1 {
-    color: red;
-    text-align: center;
-    margin-top: 40px;
-}
-
-h2 {
-    color: blue;
-    text-align: center; 
-    margin-top: 40px; 
-}
-
-
 .controls { 
     text-align: center; 
     margin-bottom: 10px; 
@@ -25,7 +12,6 @@ h2 {
     overflow-y: auto;
     border: 1px solid #ccc;
     border-radius: 6px;
-    background: #fafafa;
     padding: 0.5rem;
 }
 
@@ -44,6 +30,5 @@ h2 {
 .table-container thead th {
     position: sticky;
     top: 0;
-    background: #eee;
     z-index: 2;
 }
