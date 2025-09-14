@@ -1,0 +1,10 @@
+/* results_pie_chart.css */
+
+.page-container canvas {
+    text-align: center;
+    margin: 0 auto;
+    display: inline; 
+    
+    max-width: 400px; 
+    max-height: 400px;
+}

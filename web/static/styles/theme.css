@@ -8,9 +8,7 @@ body {
 }
 
 /* ====== Universal Container Style ====== */
-.page-container,
-.table-container,
-.chart-container {
+.page-container {
     background: #2b2b2b;            /* lighter gray card */
     border: 1px solid rgba(255,255,255,0.2); 
     border-radius: 12px;
@@ -18,14 +16,10 @@ body {
     margin: 1rem auto;
     max-width: 1000px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    text-align: center;
 }
 
-.page-container canvas {
-    max-width: 600px;   /* or any desired width */
-    max-height: 600px;  /* or any desired height */
-    margin: 0 auto;
-    display: block;
-}
+
 
 /* ====== Headings ====== */
 h1, h2, h3 {
@@ -38,6 +32,7 @@ a {
     color: #4fa3ff; /* Canva-ish accent blue */
     text-decoration: none;
 }
+
 a:hover {
     text-decoration: underline;
 }

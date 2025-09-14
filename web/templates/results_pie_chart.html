@@ -1,33 +1,25 @@
 <!DOCTYPE HTML>
-
 <html>
 <head>
     <meta charset="UTF-8">
     <title>{{ my_username }} Win-Lose_Draw Rates</title>
-    
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='/images/lichess_logo.png')}}">
-    
-    <!-- Dark Theme CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/theme.css') }}">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/results_pie_chart.css') }}">
 </head>
 <body>
     <div class="page-container">
         <h1> {{ my_username }} Win-Lose-Draw Rates </h1>
-        <div style="display: felx; justify-content: space-around;">
-            <canvas id="WhiteChart" width="400" height="400" max-width="400" max-height="400"></canvas>
-            <canvas id="BlackChart" width="400" height="400" max-width="400" max-height="400"></canvas>
-        </div>
-        <!-- TODO explain text -->
+        <canvas style="display: inline" id="WhiteChart"></canvas>
+        <canvas style="display: inline" id="BlackChart"></canvas>
+        <p>Above show the most popular openings played by {{ my_username }} with White and Black pieces.</p>
     </div>
-
     <p style="text-align:center;"><a href="{{ url_for('index') }}">Back to Home</a></p>
-
+    
     <!-- Javascript -->
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    
     <!-- Common Dark Theme Options -->
     <script src="{{ url_for('static', filename='scripts/common_charts.js') }}"></script>
 
@@ -38,6 +30,5 @@
         const blackData = {{ black_results | tojson }};
     </script>
     <script src="{{ url_for('static', filename='scripts/results_pie_chart.js')}}"></script>
-
 </body>
 </html>
