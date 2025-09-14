@@ -5,7 +5,7 @@
     <title>{{ my_username }} Casual Game Rating Simulation</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='/images/lichess_logo.png')}}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='/images/beaker.ico')}}">
     
     <!-- Dark Theme CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/theme.css') }}">
@@ -20,7 +20,12 @@
     <h1>{{ my_username }} Casual Game Rating Simulation</h1>
     <p>This graph explores the rating of a player if casual games were rated.</p>
 
-    <canvas id="casual_game_simulation_line_graph"></canvas>
+    <canvas id="ratingChart"></canvas>
+    
+    <p>
+    Highest simulated elo: {{ highest_test_elo }} <br>
+    Average simulated elo: {{ average_test_elo }} <br>
+    </p>
 
     <!-- JS -->
     <!-- Chart.js -->
@@ -31,12 +36,14 @@
 
     <!-- Data from Flask -->
     <script>
-        const times = {{ times|tojson }};
-        const ratings = {{ ratings|tojson }};
+        const labels = {{ labels|tojson }};
+        const highs  = {{ highs|tojson }};
+        const avgs   = {{ avgs|tojson }};
+        const lows   = {{ lows|tojson }};
     </script>
 
     <!-- Page Source -->
-    <script src="{{ url_for('static', filename='scripts/casual_rating_simulation.js')}}"></script>
+    <script src="{{ url_for('static', filename='scripts/casual_rating_simulation.js')}}"></script> 
 
     <p style="text-align:center;"><a href="{{ url_for('index') }}">Back to Home</a></p>
 </div>

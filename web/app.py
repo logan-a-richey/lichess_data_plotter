@@ -6,7 +6,10 @@ import json
 import pymysql
 
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 # matplotlib.use('Agg')
+import pandas as pd
+from collections import defaultdict
 
 from elo_calc import update_elo 
 
@@ -364,21 +367,12 @@ def get_top_wins():
         my_username=my_username
     )
 
-import matplotlib.dates as mdates
 
-@app.route("/get_rating_simulation")
-def get_rating_simulation():
-    # get casual rating bullet elo graph 
-
+def do_matplot_rating_sim():
     with open("my_dsn.json") as file:
         dsn = json.load(file)
-
-    # connection = pymysql.connect(**dsn, cursorclass=pymysql.cursors.DictCursor)
-    # dbh = connection.cursor()
-    
     connection = pymysql.connect(**dsn)
     dbh = connection.cursor(pymysql.cursors.DictCursor)
-
     sql = """
     SELECT id, event, site, white, black, result, 
            whiteelo, blackelo, my_date
@@ -390,34 +384,25 @@ def get_rating_simulation():
         AND event='casual bullet game'
     ORDER BY my_date ASC
     """
-
     dbh.execute(sql, (my_username, my_username, '%lichess AI%', '%lichess AI%') )
     rows = dbh.fetchall()
     connection.close()
     
     test_elo = 1500 # starting rating
-    
-    times = [] # TODO game idx - want to make Y-M for ticks
+    times = []
     ratings = []
-
 
     for g_idx, g in enumerate(rows):
         usr_elo = 1200
         opp_elo = 1200
-        
         # Rated vs casual
         is_casual: bool = ("casual" in g["event"].lower()) or \
                     (not g["whiteratingdiff"] and not g["blackratingdiff"])
-        
         usr_is_white = g["white"] == my_username 
-
         usr_result = "draw"
-    
-
         if usr_is_white:            
             usr_elo = g["whiteelo"]
             opp_elo = g["blackelo"]
-
             if g["result"] == "1-0":
                 usr_result = "win"
             elif g["result"] == "0-1":
@@ -428,36 +413,109 @@ def get_rating_simulation():
             # usr_is_black    
             opp_elo = g["whiteelo"]
             usr_elo = g["blackelo"]
-            
             if g["result"] == "0-1":
                 usr_result = "win"
             elif g["result"] == "1-0":
                 usr_result = "loss"
             else:
                 usr_result = "draw"
-
         test_elo, _ = update_elo(test_elo, opp_elo, usr_result)
-        
         # x axis (time), y axis (rating)
         # times.append(g["my_date"])
         times.append(g_idx)
         ratings.append(test_elo)
     
-    # DEBUG
-    # plt.plot(times, ratings)
-    # plt.ylabel("Elo")
-    # plt.title("Casual Rating Sim")
-    # plt.show()
-    
     max_elo = max(ratings)
     avg_elo = int(sum(ratings) / len(ratings))
     print("[INFO] max casual elo =~ {}".format(max_elo))
     print("[INFO] avg casual elo =~ {}".format(avg_elo))
+    
+    # DEBUG
+    plt.plot(times, ratings)
+    plt.ylabel("Elo")
+    plt.title("Casual Rating Sim")
+    plt.show()
+    return 
 
+@app.route("/get_rating_simulation")
+def get_rating_simulation():
+    with open("my_dsn.json") as file:
+        dsn = json.load(file)
+
+    connection = pymysql.connect(**dsn, cursorclass=pymysql.cursors.DictCursor)
+    dbh = connection.cursor()
+
+    sql = """
+    SELECT white, black, result, whiteelo, blackelo, my_date
+    FROM my_games
+    WHERE 
+        (white=%s OR black=%s) 
+        AND (white NOT LIKE %s) 
+        AND (black NOT LIKE %s) 
+        AND event='casual bullet game'
+    ORDER BY my_date ASC
+    """
+    dbh.execute(sql, (my_username, my_username, '%lichess AI%', '%lichess AI%'))
+    rows = dbh.fetchall()
+    connection.close()
+
+    monthly_elos = defaultdict(list)  # { "YYYY-MM": [elos...] }
+    test_elo = 1500
+    k_factor = 10
+
+    for g in rows:
+        usr_is_white = g["white"] == my_username
+        opp_elo = g["blackelo"] if usr_is_white else g["whiteelo"]
+        usr_result = "draw"
+
+        if usr_is_white:
+            if g["result"] == "1-0": usr_result = "win"
+            elif g["result"] == "0-1": usr_result = "loss"
+        else:
+            if g["result"] == "0-1": usr_result = "win"
+            elif g["result"] == "1-0": usr_result = "loss"
+
+        # Simulate Elo
+        test_elo, _ = update_elo(test_elo, opp_elo, usr_result, k_factor)
+
+        # Group by YYYY-MM
+        month = pd.to_datetime(g["my_date"]).strftime("%Y-%m")
+        monthly_elos[month].append(test_elo)
+
+    # Aggregate per month
+    labels = []
+    highs, avgs, lows = [], [], []
+
+    for month in sorted(monthly_elos.keys()):
+        elos = monthly_elos[month]
+        labels.append(month)
+        highs.append(max(elos))
+        avgs.append(int(sum(elos) / len(elos)))
+        lows.append(min(elos))
+
+    # Debug plot in matplotlib
+    # plt.plot(labels, highs, color="green", label="Monthly High")
+    # plt.plot(labels, avgs, color="gold", label="Monthly Avg")
+    # plt.plot(labels, lows, color="red", label="Monthly Low")
+    # plt.ylabel("Elo")
+    # plt.title("Casual Rating Sim (Monthly)")
+    # plt.xticks(rotation=45)
+    # plt.legend()
+    # plt.tight_layout()
+    # plt.show()
+    
+    highest_test_elo = max(highs)
+    average_test_elo = int(sum(avgs) / len(avgs))
+
+    # Pass to template
     return render_template(
         "rating_simulation.html",
-        times=times,
-        ratings=ratings,
+        labels=labels,
+        highs=highs,
+        avgs=avgs,
+        lows=lows,
+        highest_test_elo=highest_test_elo,
+        average_test_elo=average_test_elo,
         my_username=my_username
     )
 
