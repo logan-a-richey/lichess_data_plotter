@@ -26,3 +26,12 @@ Skills learned: sql, mysql_server, pymysql, regex, flask, html, jinga, matplotli
 * explored javascript to allow for dynamic display options.
 * html table sorting and ordering
 * chart.js on click behavior to warp to entry in html table
+
+## Sep 13, 2025
+* applied css style sheets to all graphs
+* separated js from html - putting it in its own file
+* debugged canvas and div formatting in html
+* significantly improved user experience
+* added elo simulation for casual bullet games
+* checkbox to toggle visibility of elements, update using javascript functions
+

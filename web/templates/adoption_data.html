@@ -13,6 +13,7 @@
         <!-- Adoption -->
         <hr>
         <h2>{{ my_username }} adopted players</h2>
+        
         <div style="text-align: center; margin-bottom: 10px;">
             Show: 
             <select id="topFilterAdopted">
@@ -22,9 +23,17 @@
                 <option value="all">Show All</option>
             </select>
         </div>
+        
+        <div class="table-toggles">
+          <label>
+            <input type="checkbox" id="toggleTableAdopted" checked>
+                Show Adopted Table
+            </label>
+        </div>
+
         <!-- <canvas id="barAdopted"></canvas> -->
         <canvas id="scatterAdopted"></canvas>
-        <div class="scroll-container">
+        <div class="scroll-container" id="scroll_1">
             <table id="tableAdopted">
                 <thead>
                     <tr>
@@ -56,6 +65,7 @@
         <br>
         <!-- Been Adopted -->
         <h2>{{ my_username }} been-adopted data:</h2>
+        
         <div style="text-align: center; margin-bottom: 10px;">
             Show: 
             <select id="topFilterBeenAdopted">
@@ -64,9 +74,17 @@
                 <option value="all">Show All</option>
             </select>
         </div>
+
+        <div class="table-toggles">
+            <label>
+                <input type="checkbox" id="toggleTableBeenAdopted" checked>
+                Show Been-Adopted Table
+            </label>
+        </div>
+
         <!-- <canvas id="barBeenAdopted"></canvas> -->
         <canvas id="scatterBeenAdopted"></canvas>
-        <div class="scroll-container">
+        <div class="scroll-container" id="scroll_2">
             <table id="tableBeenAdopted">
                 <thead>
                     <tr>
