@@ -88,6 +88,29 @@ function sortTable(tableId, colIndex, type, dir) {
     rows.forEach(r => tbody.appendChild(r));
 }
 
+function sortIntTable(tableId, colIndex, type, dir) {
+    const table = document.getElementById(tableId);
+    const tbody = table.tBodies[0];
+    const rows = Array.from(tbody.rows);
+
+    rows.sort((a, b) => {
+        let valA = parseInt(a.cells[colIndex].innerText);
+        let valB = parseInt(b.cells[colIndex].innerText);
+
+        if (type === "num") {
+            valA = parseInt(valA);
+            valB = parseInt(valB);
+        } else if (type === "name") {
+            valA = valA.toLowerCase();
+            valB = valB.toLowerCase();
+        }
+
+        return dir === "asc" ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
+    });
+
+    rows.forEach(r => tbody.appendChild(r));
+}
+
 // Attach sorting behavior
 document.querySelectorAll("th[data-sort]").forEach(th => {
     th.addEventListener("click", () => {
@@ -95,8 +118,13 @@ document.querySelectorAll("th[data-sort]").forEach(th => {
         const colIndex = Array.from(th.parentNode.children).indexOf(th);
         const type = th.dataset.sort;
         const dir = th.dataset.dir;
-
-        sortTable(table.id, colIndex, type, dir);
+        
+        if (th.id == "th3") {
+            sortIntTable(table.id, colIndex, type, dir);
+        }
+        else {
+            sortTable(table.id, colIndex, type, dir);
+        }
 
         th.dataset.dir = dir === "asc" ? "desc" : "asc";
         th.innerText = th.innerText.replace(/▲|▼/, "") + (th.dataset.dir === "asc" ? " ▲" : " ▼");
