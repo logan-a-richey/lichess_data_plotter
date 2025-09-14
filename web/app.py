@@ -8,7 +8,7 @@ import pymysql
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 # matplotlib.use('Agg')
-import pandas as pd
+from pandas import to_datetime
 from collections import defaultdict
 
 from elo_calc import update_elo 
@@ -479,7 +479,7 @@ def get_rating_simulation():
         test_elo, _ = update_elo(test_elo, opp_elo, usr_result, k_factor)
 
         # Group by YYYY-MM
-        month = pd.to_datetime(g["my_date"]).strftime("%Y-%m")
+        month = to_datetime(g["my_date"]).strftime("%Y-%m")
         monthly_elos[month].append(test_elo)
 
     # Aggregate per month
