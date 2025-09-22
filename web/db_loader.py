@@ -92,6 +92,16 @@ class ChessGame:
     is_goofy: bool = False
     last_piece: str = ""
 
+
+def clear_db():
+    try:
+        cmd = "delete from my_games"
+        dbh.execute(cmd)
+        connection.commit()
+    except Exception as e:
+        print("[ERROR] Could not clear games")
+        exit(1)
+
 def insert_batch(records: List[ChessGame]):
     if not records:
         return
@@ -248,6 +258,9 @@ def main():
     if len(sys.argv) < 2:
         print("Usage: python parser.py <pgn_file>")
         sys.exit(1)
+    
+    # clear db 
+    clear_db()
 
     filename = sys.argv[1]
     parse_pgn(filename)

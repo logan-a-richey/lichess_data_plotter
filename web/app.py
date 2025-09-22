@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 
 from flask import Flask, Response, render_template, request, redirect, url_for, jsonify
-from dataclasses import dataclass, field
-import json
 import pymysql
+
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 # matplotlib.use('Agg')
-# from pandas import to_datetime
-from collections import defaultdict
-from datetime import datetime
+
 import os 
 import subprocess 
 
+import json
+from collections import defaultdict
+from datetime import datetime
+
 from elo_calc import update_elo 
+from player_data import PlayerData 
 
 app = Flask(__name__)
 
@@ -21,9 +23,6 @@ UPLOAD_FOLDER = "uploads"
 WORK_FOLDER = "work"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(WORK_FOLDER, exist_ok=True)
-
-# default global variable
-my_username = "larichey"
 
 ################################################################################
 # File upload form and loading methods 
@@ -75,6 +74,8 @@ def status():
         return jsonify({"status": "processing"})
 
 def get_most_common_user():
+    """ Finds most common user in database table """ 
+
     with open("my_dsn.json") as file:
         dsn = json.load(file)
 
@@ -116,6 +117,8 @@ def get_results_pie_chart():
 
     connection = pymysql.connect(**dsn)
     dbh = connection.cursor()
+    
+    my_username = get_most_common_user()
 
     sql_white_result = "SELECT COUNT(*) FROM my_games WHERE (white=%s AND result=%s) "
     sql_black_result = "SELECT COUNT(*) FROM my_games WHERE (black=%s AND result=%s) "
@@ -155,6 +158,8 @@ def get_games_per_month():
 
     connection = pymysql.connect(**dsn)
     dbh = connection.cursor()
+    
+    my_username = get_most_common_user()
 
     sql = """
         SELECT YEAR(my_date) AS year, MONTH(my_date) AS month, COUNT(*) AS games
@@ -163,8 +168,10 @@ def get_games_per_month():
         GROUP BY year, month
         ORDER BY year, month;
     """
+    
     dbh.execute(sql, (my_username, my_username))
     rows = dbh.fetchall()
+    
     connection.close()
 
     # Restructure into a dict: { year: {month: count} }
@@ -199,6 +206,8 @@ def get_most_common_openings():
 
     connection = pymysql.connect(**dsn)
     dbh = connection.cursor()
+    
+    my_username = get_most_common_user()
 
     # Top 10 White openings
     sql_white = """
@@ -257,17 +266,6 @@ def get_most_common_openings():
         my_username=my_username
     )
 
-@dataclass 
-class PlayerData:
-    name: str
-    highest_elo: int = 0
-    current_win_streak: int = 0
-    current_lose_streak: int = 0
-    num_win_streaks: int = 0
-    num_lose_streaks: int = 0
-    win_sites: list[str] = field(default_factory=list)
-    lose_sites: list[str] = field(default_factory=list)
-
 @app.route("/get_adoption_data")
 def get_adoption_data():
     with open("my_dsn.json") as file:
@@ -275,6 +273,8 @@ def get_adoption_data():
 
     connection = pymysql.connect(**dsn)
     dbh = connection.cursor()
+    
+    my_username = get_most_common_user()
     
     sql = """
     SELECT id, white, black, result, site, whiteelo, blackelo
@@ -285,6 +285,7 @@ def get_adoption_data():
     
     dbh.execute(sql, (my_username, my_username) )
     rows = dbh.fetchall()
+    
 
     connection.close()
     
@@ -375,6 +376,8 @@ def get_top_wins():
 
     connection = pymysql.connect(**dsn)
     dbh = connection.cursor(pymysql.cursors.DictCursor)
+    
+    my_username = get_most_common_user()
 
     sql = """
     SELECT id, event, site, white, black, result, 
@@ -452,7 +455,10 @@ def do_matplot_rating_sim():
     with open("my_dsn.json") as file:
         dsn = json.load(file)
     connection = pymysql.connect(**dsn)
+    
     dbh = connection.cursor(pymysql.cursors.DictCursor)
+    my_username = get_most_common_user()
+    
     sql = """
     SELECT id, event, site, white, black, result, 
            whiteelo, blackelo, my_date
@@ -464,6 +470,7 @@ def do_matplot_rating_sim():
         AND event='casual bullet game'
     ORDER BY my_date ASC
     """
+    
     dbh.execute(sql, (my_username, my_username, '%lichess AI%', '%lichess AI%') )
     rows = dbh.fetchall()
     connection.close()
@@ -524,6 +531,8 @@ def get_rating_simulation():
 
     connection = pymysql.connect(**dsn, cursorclass=pymysql.cursors.DictCursor)
     dbh = connection.cursor()
+    
+    my_username = get_most_common_user()
 
     sql = """
     SELECT white, black, result, whiteelo, blackelo, my_date
@@ -533,8 +542,10 @@ def get_rating_simulation():
         AND event='casual bullet game'
     ORDER BY my_date ASC
     """
+    
     dbh.execute(sql, (my_username, my_username))
     rows = dbh.fetchall()
+    
     connection.close()
 
     monthly_elos = defaultdict(list)  # { "YYYY-MM": [elos...] }
@@ -601,6 +612,7 @@ def get_rating_simulation():
         my_username=my_username
     )
 
+# run the flask app
 if __name__ == "__main__":
     app.run(debug=False)
 
