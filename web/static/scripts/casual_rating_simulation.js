@@ -5,9 +5,9 @@ new Chart(document.getElementById("ratingChart"), {
     data: {
         labels: labels,
         datasets: [
-            { label: "High", data: highs, borderColor: "green", fill: false },
+            // { label: "High", data: highs, borderColor: "green", fill: false },
             { label: "Average", data: avgs, borderColor: "gold", fill: false },
-            { label: "Low", data: lows, borderColor: "red", fill: false }
+            // { label: "Low", data: lows, borderColor: "red", fill: false }
         ]
     },
     options: {

@@ -7,7 +7,7 @@ import pymysql
 import json
 import sys
 import re
-# from tqdm import tqdm 
+from tqdm import tqdm 
 from dataclasses import dataclass, asdict
 from typing import List
 
@@ -161,9 +161,9 @@ def create_and_insert_game(record: dict):
         batch = []
 
 def parse_pgn(filename):
-    # total_lines = 0 
-    # with open(filename, 'r', encoding="utf-8") as f:
-    #    total_lines = sum(1 for line in f) # count lines
+    total_lines = 0 
+    with open(filename, 'r', encoding="utf-8") as f:
+       total_lines = sum(1 for line in f) # count lines
 
     try:
         fh = open(filename, 'r', encoding="utf-8")
@@ -176,8 +176,8 @@ def parse_pgn(filename):
     global batch
     global batch_size 
 
-    # for line in tqdm(fh, total=total_lines, desc="Processing..."):
-    for line in fh:
+    for line in tqdm(fh, total=total_lines, desc="Processing..."):
+    # for line in fh:
         line = line.strip()
         if not line: continue
         if line.startswith("#"): continue
@@ -193,8 +193,12 @@ def parse_pgn(filename):
                 if k == "event": record = {}
                 record[k] = v
                 if k == "opening":
-                    first_word = v.split()[0]
-                    record["short_opening"] = first_word
+                    opening_words = v.split()
+                    if len(opening_words) == 1:
+                        record["short_opening"] = opening_words[0]
+                    else:
+                        two_words =  "{} {}".format(opening_words[0], opening_words[1]).strip(":")
+                        record["short_opening"] = two_words
             continue
 
         # pgn data

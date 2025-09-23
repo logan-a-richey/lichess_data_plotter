@@ -597,7 +597,7 @@ def get_rating_simulation():
     # plt.tight_layout()
     # plt.show()
     
-    highest_test_elo = max(highs)
+    highest_test_elo = max(avgs)
     average_test_elo = int(sum(avgs) / len(avgs))
 
     # Pass to template
